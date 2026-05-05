@@ -100,3 +100,36 @@ Make Dashboard useful as a quality-control entry point, not only a volume summar
 - Added per-run quality badges in the recent task list.
 - Verified `npm run build` on 2026-05-05.
 - Verified `APP_URL=http://localhost:3001 npm run test:smoke` on 2026-05-05.
+
+## 2026-05-05 - v0.1.4 Memory Library Plan
+
+### Goal
+
+Make Memory Objects usable beyond an individual RouteRun. R1 generation already writes `memoryCandidates` into `MemoryObject`, but users cannot browse, filter, or revisit accumulated memory across meetings.
+
+### Scope
+
+- Add `/memory` page for all Memory Objects.
+- Add type filtering for `COMPANY`, `PERSON`, `EVENT`, `THESIS`, and `ACTION`.
+- Add Memory navigation to `AppShell`.
+- Add Dashboard memory count and link to the Memory Library.
+- Show source RouteRun links for each Memory Object.
+- Bump package version from `0.1.3` to `0.1.4`.
+
+### Acceptance Criteria
+
+- `/memory` lists all Memory Objects ordered by newest first.
+- `/memory?type=EVENT` filters by memory type.
+- Each Memory Object links back to its source RouteRun.
+- Dashboard exposes total Memory Object count.
+- `npm run build` and `npm run test:smoke` pass.
+- The release is committed, tagged, and pushed to `https://github.com/zhanglunet/apex`.
+
+### Completion Record
+
+- Added `/memory` Memory Library page with type filtering.
+- Added Memory navigation to `AppShell`.
+- Added Dashboard Memory Object count and link to Memory Library.
+- Added source RouteRun links for each Memory Object.
+- Verified `npm run build` on 2026-05-05.
+- Verified `APP_URL=http://localhost:3001 npm run test:smoke` on 2026-05-05.

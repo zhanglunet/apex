@@ -1,17 +1,18 @@
 import Link from "next/link";
-import { AlertTriangle, CheckCircle2, ClipboardCheck, FileText, PlayCircle, ShieldCheck } from "lucide-react";
+import { AlertTriangle, CheckCircle2, ClipboardCheck, Database, FileText, PlayCircle, ShieldCheck } from "lucide-react";
 import { AppShell } from "@/components/AppShell";
 import { prisma } from "@/lib/db";
 import { getQualityLabel, getQualityState } from "@/lib/quality-report";
 
 export default async function DashboardPage() {
-  const [files, runs, pendingRuns, failures, openFailures, activeEvals, qualityRuns, recentRuns] = await Promise.all([
+  const [files, runs, pendingRuns, failures, openFailures, activeEvals, memories, qualityRuns, recentRuns] = await Promise.all([
     prisma.sourceFile.count(),
     prisma.routeRun.count(),
     prisma.routeRun.count({ where: { status: { in: ["DRAFT", "READY"] } } }),
     prisma.failureCard.count(),
     prisma.failureCard.count({ where: { status: "OPEN" } }),
     prisma.evalCase.count({ where: { status: "ACTIVE" } }),
+    prisma.memoryObject.count(),
     prisma.routeRun.findMany({
       where: { qualityJson: { not: null } },
       select: { qualityJson: true },
@@ -31,6 +32,7 @@ export default async function DashboardPage() {
     { label: "阻断质量项", value: blockingQualityRuns, icon: ShieldCheck },
     { label: "Open Failures", value: openFailures, icon: AlertTriangle },
     { label: "Active Evals", value: activeEvals, icon: ClipboardCheck },
+    { label: "Memory Objects", value: memories, icon: Database },
   ];
 
   return (
@@ -61,7 +63,12 @@ export default async function DashboardPage() {
           })}
         </section>
 
-        <section className="grid gap-4 lg:grid-cols-3">
+        <section className="grid gap-4 lg:grid-cols-4">
+          <Link href="/memory" className="rounded border border-line bg-white p-4 hover:bg-panel">
+            <div className="text-sm font-medium text-ink">组织记忆沉淀</div>
+            <div className="mt-2 text-2xl font-semibold text-ink">{memories}</div>
+            <p className="mt-2 text-xs leading-5 text-muted">查看从会议输出中沉淀出的 Memory Objects。</p>
+          </Link>
           <Link href="/failure-ops?status=OPEN" className="rounded border border-line bg-white p-4 hover:bg-panel">
             <div className="text-sm font-medium text-ink">失败样本待处理</div>
             <div className="mt-2 text-2xl font-semibold text-ink">{openFailures}</div>
