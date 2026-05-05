@@ -232,3 +232,35 @@ Add a full RouteRun workbench. Users can currently reach only recent runs from D
 - Extended smoke test to check `/runs` and `/runs?status=REVIEWED`.
 - Verified `npm run build` on 2026-05-05.
 - Verified `APP_URL=http://localhost:3001 npm run test:smoke` on 2026-05-05.
+
+## 2026-05-05 - v0.1.8 Export Guard Plan
+
+### Goal
+
+Harden Markdown export so the system does not create empty export files or return unclear server errors for bad requests. Exported Markdown is a handoff artifact, so it should only be created when a RouteRun has real output.
+
+### Scope
+
+- Validate `routeRunId` in `/api/export`.
+- Return HTTP 400 when a run has no generated or edited output.
+- Return HTTP 404 when the target RouteRun does not exist.
+- Keep successful export behavior unchanged.
+- Extend smoke test with negative export assertions.
+- Bump package version from `0.1.7` to `0.1.8`.
+
+### Acceptance Criteria
+
+- Missing `routeRunId` returns HTTP 400.
+- Exporting a draft run with no output returns HTTP 400.
+- Exporting a valid reviewed run still returns Markdown content.
+- `npm run build` and `npm run test:smoke` pass.
+- The release is committed, tagged, and pushed to `https://github.com/zhanglunet/apex`.
+
+### Completion Record
+
+- Added request validation to `/api/export`.
+- Added explicit 404 handling for missing RouteRuns.
+- Added export content validation to prevent empty Markdown exports.
+- Extended smoke test with missing id and empty output export assertions.
+- Verified `npm run build` on 2026-05-05.
+- Verified `APP_URL=http://localhost:3001 npm run test:smoke` on 2026-05-05.

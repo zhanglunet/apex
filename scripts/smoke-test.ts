@@ -48,6 +48,20 @@ async function main() {
   if (!routeRunId) throw new Error("create run did not return a route id.");
   console.log(`OK create run: ${routeRunId}`);
 
+  const emptyExportResponse = await fetch(`${baseUrl}/api/export`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ routeRunId }),
+  });
+  await assertBadRequest(emptyExportResponse, "empty export content");
+
+  const missingExportIdResponse = await fetch(`${baseUrl}/api/export`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ routeRunId: "" }),
+  });
+  await assertBadRequest(missingExportIdResponse, "missing export routeRunId");
+
   const generateResponse = await fetch(`${baseUrl}/api/generate`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
