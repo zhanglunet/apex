@@ -1,0 +1,58 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model SourceFile {
+  id          String     @id @default(cuid())
+  filename    String
+  mimeType    String
+  path        String
+  textContent String
+  createdAt   DateTime   @default(now())
+  routeRuns   RouteRun[]
+}
+
+model RouteRun {
+  id              String        @id @default(cuid())
+  routeType       String        @default("R1_MEETING_INTELLIGENCE")
+  title           String
+  status          String        @default("DRAFT")
+  sourceFileId    String
+  inputText       String
+  generatedOutput String?
+  editedOutput    String?
+  qualityJson     String?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  sourceFile      SourceFile    @relation(fields: [sourceFileId], references: [id])
+  failureCards    FailureCard[]
+  memoryObjects   MemoryObject[]
+}
+
+model FailureCard {
+  id             String   @id @default(cuid())
+  routeRunId     String
+  failureType    String
+  severity       String
+  description    String
+  originalOutput String?
+  userRevision   String?
+  status         String   @default("OPEN")
+  createdAt      DateTime @default(now())
+  routeRun       RouteRun @relation(fields: [routeRunId], references: [id])
+}
+
+model MemoryObject {
+  id         String   @id @default(cuid())
+  type       String
+  title      String
+  content    String
+  routeRunId String
+  createdAt  DateTime @default(now())
+  routeRun   RouteRun @relation(fields: [routeRunId], references: [id])
+}
