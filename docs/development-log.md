@@ -133,3 +133,33 @@ Make Memory Objects usable beyond an individual RouteRun. R1 generation already 
 - Added source RouteRun links for each Memory Object.
 - Verified `npm run build` on 2026-05-05.
 - Verified `APP_URL=http://localhost:3001 npm run test:smoke` on 2026-05-05.
+
+## 2026-05-05 - v0.1.5 Workbench Smoke Coverage Plan
+
+### Goal
+
+Increase confidence in continuous iteration by extending smoke tests beyond API workflow checks. The app now has multiple workbench pages, and a small UI routing regression should be caught before release.
+
+### Scope
+
+- Add smoke assertions for page availability.
+- Cover `/dashboard`, `/inbox`, `/runs/[id]`, `/failure-ops`, `/evals`, and `/memory`.
+- Cover filtered workbench URLs such as `/failure-ops?status=OPEN`, `/evals?status=PAUSED`, and `/memory?type=EVENT`.
+- Keep tests lightweight HTTP checks, not browser automation.
+- Bump package version from `0.1.4` to `0.1.5`.
+
+### Acceptance Criteria
+
+- Smoke test fails if any core workbench page returns non-OK.
+- Smoke test logs each page check.
+- Existing API workflow checks still pass.
+- `npm run build` and `npm run test:smoke` pass.
+- The release is committed, tagged, and pushed to `https://github.com/zhanglunet/apex`.
+
+### Completion Record
+
+- Added lightweight page availability checks to `scripts/smoke-test.ts`.
+- Covered Dashboard, Inbox, Run Detail, Failure Ops, Evals, and Memory Library.
+- Covered filtered URLs for Failure Ops, Evals, and Memory Library.
+- Verified `npm run build` on 2026-05-05.
+- Verified `APP_URL=http://localhost:3001 npm run test:smoke` on 2026-05-05.

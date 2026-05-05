@@ -9,8 +9,17 @@ async function assertOk(response: Response, label: string) {
   }
 }
 
+async function assertPage(path: string) {
+  const response = await fetch(`${baseUrl}${path}`, { redirect: "manual" });
+  await assertOk(response, `page ${path}`);
+  console.log(`OK page: ${path}`);
+}
+
 async function main() {
   console.log(`Smoke test target: ${baseUrl}`);
+
+  await assertPage("/dashboard");
+  await assertPage("/inbox");
 
   const sample = await readFile("samples/sample_meeting.md");
   const formData = new FormData();
@@ -104,6 +113,14 @@ async function main() {
   });
   await assertOk(exportResponse, "export");
   console.log("OK export");
+
+  await assertPage(`/runs/${routeRunId}`);
+  await assertPage("/failure-ops");
+  await assertPage("/failure-ops?status=OPEN");
+  await assertPage("/evals");
+  await assertPage("/evals?status=PAUSED");
+  await assertPage("/memory");
+  await assertPage("/memory?type=EVENT");
 
   console.log("Smoke test passed.");
 }
