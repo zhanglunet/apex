@@ -15,6 +15,14 @@ async function assertPage(path: string) {
   console.log(`OK page: ${path}`);
 }
 
+async function assertBadRequest(response: Response, label: string) {
+  if (response.status !== 400) {
+    const text = await response.text();
+    throw new Error(`${label} expected 400, got ${response.status} ${text}`);
+  }
+  console.log(`OK validation: ${label}`);
+}
+
 async function main() {
   console.log(`Smoke test target: ${baseUrl}`);
 
@@ -55,6 +63,13 @@ async function main() {
   await assertOk(saveResponse, "save");
   console.log("OK save");
 
+  const emptySaveResponse = await fetch(`${baseUrl}/api/runs/${routeRunId}`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ editedOutput: "" }),
+  });
+  await assertBadRequest(emptySaveResponse, "empty edited output");
+
   const failureResponse = await fetch(`${baseUrl}/api/failure-cards`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -71,6 +86,37 @@ async function main() {
   const failurePayload = await failureResponse.json();
   const failureCardId = failurePayload.card.id as string;
   console.log(`OK failure card: ${failureCardId}`);
+
+  const emptyFailureResponse = await fetch(`${baseUrl}/api/failure-cards`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      routeRunId,
+      failureType: "FORMAT_ERROR",
+      severity: "P2",
+      description: "",
+    }),
+  });
+  await assertBadRequest(emptyFailureResponse, "empty failure description");
+
+  const invalidSeverityResponse = await fetch(`${baseUrl}/api/failure-cards`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      routeRunId,
+      failureType: "FORMAT_ERROR",
+      severity: "PX",
+      description: "Invalid severity should fail",
+    }),
+  });
+  await assertBadRequest(invalidSeverityResponse, "invalid failure severity");
+
+  const invalidFailureStatusResponse = await fetch(`${baseUrl}/api/failure-cards/${failureCardId}`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ status: "UNKNOWN" }),
+  });
+  await assertBadRequest(invalidFailureStatusResponse, "invalid failure status");
 
   const evalResponse = await fetch(`${baseUrl}/api/eval-cases`, {
     method: "POST",

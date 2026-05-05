@@ -163,3 +163,37 @@ Increase confidence in continuous iteration by extending smoke tests beyond API 
 - Covered filtered URLs for Failure Ops, Evals, and Memory Library.
 - Verified `npm run build` on 2026-05-05.
 - Verified `APP_URL=http://localhost:3001 npm run test:smoke` on 2026-05-05.
+
+## 2026-05-05 - v0.1.6 API Input Guard Plan
+
+### Goal
+
+Prevent low-quality or invalid records from entering the R1 quality loop. Failure Cards and saved revisions become downstream Eval Cases and quality history, so API endpoints should reject empty descriptions, empty saved output, and unsupported enum-like values.
+
+### Scope
+
+- Add small shared validation helpers for allowed values and required text.
+- Validate Failure Card `failureType`, `severity`, and `description`.
+- Validate saved RouteRun `editedOutput`.
+- Validate Failure Card status updates.
+- Extend smoke test with negative API assertions.
+- Bump package version from `0.1.5` to `0.1.6`.
+
+### Acceptance Criteria
+
+- Empty Failure Card descriptions return HTTP 400.
+- Unsupported Failure Card severity/status values return HTTP 400.
+- Empty RouteRun edited output returns HTTP 400.
+- Existing happy-path smoke workflow still passes.
+- `npm run build` and `npm run test:smoke` pass.
+- The release is committed, tagged, and pushed to `https://github.com/zhanglunet/apex`.
+
+### Completion Record
+
+- Added `lib/validation.ts` with shared text and enum-like value guards.
+- Added Failure Card creation validation for type, severity, and description.
+- Added Failure Card status update validation.
+- Added RouteRun edited output validation.
+- Extended smoke test with negative API assertions for empty and invalid inputs.
+- Verified `npm run build` on 2026-05-05.
+- Verified `APP_URL=http://localhost:3001 npm run test:smoke` on 2026-05-05.
