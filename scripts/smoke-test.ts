@@ -71,6 +71,18 @@ async function main() {
   await assertOk(evalResponse, "eval case");
   console.log("OK eval case");
 
+  const duplicateEvalResponse = await fetch(`${baseUrl}/api/eval-cases`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ routeRunId, failureCardId }),
+  });
+  await assertOk(duplicateEvalResponse, "duplicate eval case");
+  const duplicateEvalPayload = await duplicateEvalResponse.json();
+  if (!duplicateEvalPayload.existing) {
+    throw new Error("duplicate eval case did not return the existing record.");
+  }
+  console.log("OK duplicate eval guard");
+
   const exportResponse = await fetch(`${baseUrl}/api/export`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },

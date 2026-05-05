@@ -13,6 +13,19 @@ export async function POST(request: Request) {
     prisma.failureCard.findUniqueOrThrow({ where: { id: failureCardId } }),
     prisma.routeRun.findUniqueOrThrow({ where: { id: routeRunId } }),
   ]);
+  if (card.routeRunId !== run.id) {
+    return NextResponse.json({ error: "Failure Card does not belong to this RouteRun." }, { status: 400 });
+  }
+
+  const existing = await prisma.evalCase.findFirst({
+    where: { failureCardId },
+  });
+  if (existing) {
+    revalidatePath("/evals");
+    revalidatePath("/failure-ops");
+    return NextResponse.json({ evalCase: existing, existing: true });
+  }
+
   const evalCase = await prisma.evalCase.create({
     data: {
       failureCardId,

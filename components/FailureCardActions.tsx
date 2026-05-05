@@ -6,14 +6,17 @@ export function FailureCardActions({
   cardId,
   routeRunId,
   status,
+  evalCaseCount,
 }: {
   cardId: string;
   routeRunId: string;
   status: string;
+  evalCaseCount: number;
 }) {
   const [busy, setBusy] = useState(false);
   const [nextStatus, setNextStatus] = useState(status);
   const [error, setError] = useState<string | null>(null);
+  const hasEvalCase = evalCaseCount > 0;
 
   async function patchStatus() {
     setBusy(true);
@@ -61,9 +64,10 @@ export function FailureCardActions({
       <button onClick={patchStatus} disabled={busy || nextStatus === status} className="rounded border border-line bg-white px-3 py-2 text-sm text-ink disabled:opacity-60">
         更新状态
       </button>
-      <button onClick={createEvalCase} disabled={busy} className="rounded bg-ink px-3 py-2 text-sm font-medium text-white disabled:opacity-60">
-        生成 Eval Case
+      <button onClick={createEvalCase} disabled={busy || hasEvalCase} className="rounded bg-ink px-3 py-2 text-sm font-medium text-white disabled:opacity-60">
+        {hasEvalCase ? "已生成 Eval Case" : "生成 Eval Case"}
       </button>
+      <div className="text-xs text-muted">Eval Cases：{evalCaseCount}</div>
       {error ? <div className="text-xs text-red-700">{error}</div> : null}
     </div>
   );

@@ -355,7 +355,7 @@ V1.1 已完成第一轮开发：
 
 目标：让 R1 输出可以被连续使用、复盘和改进。
 
-当前状态：正在开发，核心能力已合入主分支。
+当前状态：正在开发，核心能力已合入主分支。`v0.1.1` 已补齐 Failure Card 生成 Eval Case 的幂等保护，避免重复沉淀相同回归样本。
 
 重点：
 
@@ -422,3 +422,4 @@ npm run test:smoke
 
 - [DEVELOPMENT_PLAN.md](DEVELOPMENT_PLAN.md)
 - [NEXT_VERSION_DEVELOPMENT_PLAN.md](NEXT_VERSION_DEVELOPMENT_PLAN.md)
+- [docs/development-log.md](docs/development-log.md)

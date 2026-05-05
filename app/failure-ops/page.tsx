@@ -71,9 +71,8 @@ export default async function FailureOpsPage({
                       <Link href={`/runs/${card.routeRunId}`} className="mt-2 inline-block text-xs text-accent">
                         查看任务：{card.routeRun.title}
                       </Link>
-                      <div className="mt-2 text-xs text-muted">Eval Cases：{card.evalCases.length}</div>
                     </div>
-                    <FailureCardActions cardId={card.id} routeRunId={card.routeRunId} status={card.status} />
+                    <FailureCardActions cardId={card.id} routeRunId={card.routeRunId} status={card.status} evalCaseCount={card.evalCases.length} />
                   </div>
                 </div>
               ))
