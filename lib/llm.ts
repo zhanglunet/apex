@@ -1,11 +1,12 @@
 import OpenAI from "openai";
+import { normalizeMeetingJson } from "./meeting";
 import { buildMeetingPrompt } from "./prompts";
 import { renderMeetingMarkdown, safeJsonParse } from "./markdown";
 
 export async function generateMeetingOutput(inputText: string) {
   const apiKey = process.env.OPENAI_API_KEY;
   if (!apiKey) {
-    return renderMeetingMarkdown({
+    const data = normalizeMeetingJson({
       title: "示例会议纪要",
       fiveLineSummary: [
         "当前未配置 OPENAI_API_KEY，因此返回本地示例输出。",
@@ -21,6 +22,7 @@ export async function generateMeetingOutput(inputText: string) {
       memoryCandidates: [{ type: "EVENT", title: "APEX V1 本地测试", content: "完成上传到编辑的最小链路测试。" }],
       qualityWarnings: ["这是本地占位输出，不应用于真实研究工作。"],
     });
+    return { data, markdown: renderMeetingMarkdown(data), rawJson: JSON.stringify(data) };
   }
 
   const client = new OpenAI({ apiKey });
@@ -32,5 +34,6 @@ export async function generateMeetingOutput(inputText: string) {
   });
   const content = response.choices[0]?.message?.content;
   if (!content) throw new Error("LLM returned an empty response.");
-  return renderMeetingMarkdown(safeJsonParse(content));
+  const data = safeJsonParse(content);
+  return { data, markdown: renderMeetingMarkdown(data), rawJson: content };
 }

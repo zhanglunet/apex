@@ -12,6 +12,18 @@ type FailureCard = {
   createdAt: string;
 };
 
+type MemoryObject = {
+  id: string;
+  type: string;
+  title: string;
+  content: string;
+};
+
+type QualityReport = {
+  checks?: Array<{ id: string; label: string; passed: boolean; detail: string }>;
+  summary?: { passed: number; total: number; blocking: boolean };
+};
+
 type RunView = {
   id: string;
   title: string;
@@ -22,6 +34,7 @@ type RunView = {
   qualityJson: string | null;
   sourceFilename: string;
   failureCards: FailureCard[];
+  memoryObjects: MemoryObject[];
 };
 
 export function RunEditor({ run }: { run: RunView }) {
@@ -115,7 +128,7 @@ export function RunEditor({ run }: { run: RunView }) {
     }
   }
 
-  const quality = run.qualityJson ? JSON.parse(run.qualityJson) : null;
+  const quality = run.qualityJson ? (JSON.parse(run.qualityJson) as QualityReport) : null;
 
   return (
     <div className="flex flex-col gap-5">
@@ -166,18 +179,48 @@ export function RunEditor({ run }: { run: RunView }) {
       <section className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_420px]">
         <div className="rounded border border-line bg-white p-5">
           <h2 className="text-base font-semibold text-ink">Quality Panel</h2>
-          {quality ? (
-            <div className="mt-4 grid gap-3 sm:grid-cols-3">
-              {Object.entries(quality).map(([key, value]) => (
-                <div key={key} className="rounded border border-line bg-panel p-3">
-                  <div className="text-xs text-muted">{key}</div>
-                  <div className="mt-2 text-sm font-semibold text-ink">{value ? "通过" : "待检查"}</div>
-                </div>
-              ))}
-            </div>
+          {quality?.checks?.length ? (
+            <>
+              <div className="mt-2 text-sm text-muted">
+                通过 {quality.summary?.passed || 0} / {quality.summary?.total || quality.checks.length}
+                {quality.summary?.blocking ? "，存在阻断项" : ""}
+              </div>
+              <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                {quality.checks.map((item) => (
+                  <div key={item.id} className="rounded border border-line bg-panel p-3">
+                    <div className="flex items-center justify-between gap-3">
+                      <div className="text-sm font-medium text-ink">{item.label}</div>
+                      <div className={item.passed ? "text-xs font-semibold text-green-700" : "text-xs font-semibold text-red-700"}>
+                        {item.passed ? "通过" : "待修正"}
+                      </div>
+                    </div>
+                    <div className="mt-2 text-xs leading-5 text-muted">{item.detail}</div>
+                  </div>
+                ))}
+              </div>
+            </>
           ) : (
             <p className="mt-3 text-sm text-muted">生成后会展示基础质量检查。</p>
           )}
+        </div>
+
+        <div className="rounded border border-line bg-white p-5">
+          <h2 className="text-base font-semibold text-ink">Memory Objects</h2>
+          <div className="mt-4 space-y-2">
+            {run.memoryObjects.length ? (
+              run.memoryObjects.map((item) => (
+                <div key={item.id} className="rounded border border-line bg-panel p-3">
+                  <div className="flex items-center gap-2">
+                    <span className="rounded border border-line bg-white px-2 py-0.5 text-xs text-muted">{item.type}</span>
+                    <span className="text-sm font-medium text-ink">{item.title}</span>
+                  </div>
+                  <p className="mt-2 text-sm leading-6 text-muted">{item.content}</p>
+                </div>
+              ))
+            ) : (
+              <p className="text-sm text-muted">生成后会从 memoryCandidates 写入本任务关联记忆。</p>
+            )}
+          </div>
         </div>
 
         <div className="rounded border border-line bg-white p-5">

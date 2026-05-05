@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/db";
 import { generateMeetingOutput } from "@/lib/llm";
+import { runQualityChecks } from "@/lib/quality";
 
 export async function POST(request: Request) {
   try {
@@ -13,20 +14,28 @@ export async function POST(request: Request) {
       where: { id },
       data: { status: "GENERATING" },
     });
-    const output = await generateMeetingOutput(run.inputText);
+    const result = await generateMeetingOutput(run.inputText);
+    const quality = runQualityChecks(result.markdown);
     const updated = await prisma.routeRun.update({
       where: { id },
       data: {
-        generatedOutput: output,
-        editedOutput: output,
+        generatedOutput: result.markdown,
+        editedOutput: result.markdown,
         status: "READY",
-        qualityJson: JSON.stringify({
-          hasActionItems: output.includes("## 行动项"),
-          hasOpenQuestions: output.includes("## Open Questions"),
-          hasQualityWarnings: output.includes("## Quality Warnings"),
-        }),
+        qualityJson: JSON.stringify({ ...quality, rawJson: result.rawJson }),
       },
     });
+    await prisma.memoryObject.deleteMany({ where: { routeRunId: id } });
+    if (result.data.memoryCandidates.length) {
+      await prisma.memoryObject.createMany({
+        data: result.data.memoryCandidates.map((item) => ({
+          routeRunId: id,
+          type: item.type,
+          title: item.title,
+          content: item.content,
+        })),
+      });
+    }
     revalidatePath(`/runs/${id}`);
     revalidatePath("/dashboard");
     return NextResponse.json({ run: updated });

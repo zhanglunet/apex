@@ -48,3 +48,20 @@ CREATE TABLE IF NOT EXISTS "MemoryObject" (
 CREATE INDEX IF NOT EXISTS "RouteRun_sourceFileId_idx" ON "RouteRun" ("sourceFileId");
 CREATE INDEX IF NOT EXISTS "FailureCard_routeRunId_idx" ON "FailureCard" ("routeRunId");
 CREATE INDEX IF NOT EXISTS "MemoryObject_routeRunId_idx" ON "MemoryObject" ("routeRunId");
+
+CREATE TABLE IF NOT EXISTS "EvalCase" (
+  "id" TEXT NOT NULL PRIMARY KEY,
+  "routeRunId" TEXT NOT NULL,
+  "failureCardId" TEXT,
+  "routeType" TEXT NOT NULL,
+  "inputText" TEXT NOT NULL,
+  "expectedBehavior" TEXT NOT NULL,
+  "scoringRubricJson" TEXT,
+  "status" TEXT NOT NULL DEFAULT 'ACTIVE',
+  "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT "EvalCase_routeRunId_fkey" FOREIGN KEY ("routeRunId") REFERENCES "RouteRun" ("id") ON DELETE RESTRICT ON UPDATE CASCADE,
+  CONSTRAINT "EvalCase_failureCardId_fkey" FOREIGN KEY ("failureCardId") REFERENCES "FailureCard" ("id") ON DELETE SET NULL ON UPDATE CASCADE
+);
+
+CREATE INDEX IF NOT EXISTS "EvalCase_routeRunId_idx" ON "EvalCase" ("routeRunId");
+CREATE INDEX IF NOT EXISTS "EvalCase_failureCardId_idx" ON "EvalCase" ("failureCardId");

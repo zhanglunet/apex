@@ -32,6 +32,7 @@ model RouteRun {
   sourceFile      SourceFile    @relation(fields: [sourceFileId], references: [id])
   failureCards    FailureCard[]
   memoryObjects   MemoryObject[]
+  evalCases       EvalCase[]
 }
 
 model FailureCard {
@@ -45,6 +46,7 @@ model FailureCard {
   status         String   @default("OPEN")
   createdAt      DateTime @default(now())
   routeRun       RouteRun @relation(fields: [routeRunId], references: [id])
+  evalCases      EvalCase[]
 }
 
 model MemoryObject {
@@ -55,4 +57,18 @@ model MemoryObject {
   routeRunId String
   createdAt  DateTime @default(now())
   routeRun   RouteRun @relation(fields: [routeRunId], references: [id])
+}
+
+model EvalCase {
+  id                String       @id @default(cuid())
+  routeRunId        String
+  failureCardId     String?
+  routeType         String
+  inputText         String
+  expectedBehavior  String
+  scoringRubricJson String?
+  status            String       @default("ACTIVE")
+  createdAt         DateTime     @default(now())
+  routeRun          RouteRun     @relation(fields: [routeRunId], references: [id])
+  failureCard       FailureCard? @relation(fields: [failureCardId], references: [id])
 }

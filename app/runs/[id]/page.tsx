@@ -10,6 +10,7 @@ export default async function RunDetailPage({ params }: { params: Promise<{ id: 
     include: {
       sourceFile: true,
       failureCards: { orderBy: { createdAt: "desc" } },
+      memoryObjects: { orderBy: { createdAt: "desc" } },
     },
   });
   if (!run) notFound();
@@ -33,6 +34,12 @@ export default async function RunDetailPage({ params }: { params: Promise<{ id: 
             description: card.description,
             status: card.status,
             createdAt: card.createdAt.toISOString(),
+          })),
+          memoryObjects: run.memoryObjects.map((item) => ({
+            id: item.id,
+            type: item.type,
+            title: item.title,
+            content: item.content,
           })),
         }}
       />

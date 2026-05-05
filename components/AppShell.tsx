@@ -1,9 +1,11 @@
 import Link from "next/link";
-import { Activity, Inbox, LayoutDashboard } from "lucide-react";
+import { Activity, AlertTriangle, ClipboardCheck, Inbox, LayoutDashboard } from "lucide-react";
 
 const navItems = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/inbox", label: "Inbox", icon: Inbox },
+  { href: "/failure-ops", label: "Failure Ops", icon: AlertTriangle },
+  { href: "/evals", label: "Evals", icon: ClipboardCheck },
 ];
 
 export function AppShell({ children }: { children: React.ReactNode }) {

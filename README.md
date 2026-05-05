@@ -26,11 +26,15 @@ APEX V1 是 APEX Research OS 的第一个最小可运行版本，当前只聚焦
 - 支持保存修订后的 Markdown。
 - 支持导出 Markdown 文件到本地。
 - 支持创建 Failure Card，记录事实错误、证据缺失、引用错误、风险遗漏、格式错误等质量问题。
+- 支持独立 `Failure Ops` 页面筛选、处理失败样本。
+- 支持从 Failure Card 生成 Eval Case。
+- 支持将 `memoryCandidates` 写入 `MemoryObject`。
+- 支持基础 Quality Checks 和 smoke test。
 - Dashboard 展示上传文件数、任务数、待审核任务数、Failure Card 数和最近任务。
 
 ## 产品边界
 
-当前版本只做 R1，不做完整 Research OS。
+当前版本主线仍只做 R1，不做完整 Research OS。
 
 已实现：
 
@@ -40,6 +44,8 @@ APEX V1 是 APEX Research OS 的第一个最小可运行版本，当前只聚焦
 - 本地文件存储
 - 本地 Markdown 导出
 - 最小 Failure Ops
+- Memory Object 写入
+- Eval Case 最小闭环
 
 暂不实现：
 
@@ -269,6 +275,8 @@ LLM 被要求返回 JSON，再由系统渲染为 Markdown。
 | `/api/runs/[id]` | `PATCH` | 保存用户修订后的 Markdown |
 | `/api/generate` | `POST` | 生成 R1 结构化会议输出 |
 | `/api/failure-cards` | `POST` | 创建 Failure Card |
+| `/api/failure-cards/[id]` | `PATCH` | 更新 Failure Card 状态 |
+| `/api/eval-cases` | `POST` | 从 Failure Card 创建 Eval Case |
 | `/api/export` | `POST` | 导出 Markdown 到 `storage/exports` |
 
 ## 数据模型
@@ -349,6 +357,22 @@ LLM 被要求返回 JSON，再由系统渲染为 Markdown。
 - `routeRunId`
 - `createdAt`
 
+### EvalCase
+
+从 Failure Card 生成的最小回归样本。
+
+字段：
+
+- `id`
+- `routeRunId`
+- `failureCardId`
+- `routeType`
+- `inputText`
+- `expectedBehavior`
+- `scoringRubricJson`
+- `status`
+- `createdAt`
+
 ## 目录结构
 
 ```text
@@ -361,6 +385,8 @@ apex-v1/
       runs/
       upload/
     dashboard/
+    evals/
+    failure-ops/
     inbox/
     runs/
     globals.css
@@ -381,6 +407,8 @@ apex-v1/
     schema.prisma
   samples/
     sample_meeting.md
+  scripts/
+    smoke-test.ts
   storage/
     uploads/
     exports/
@@ -535,6 +563,9 @@ npm run dev
 
 # 生产构建检查
 npm run build
+
+# 本地冒烟测试，需要先启动 npm run dev
+npm run test:smoke
 
 # 生成 Prisma Client
 npm run db:generate

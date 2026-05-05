@@ -1,0 +1,88 @@
+import { readFile } from "node:fs/promises";
+
+const baseUrl = process.env.APP_URL || "http://localhost:3000";
+
+async function assertOk(response: Response, label: string) {
+  if (!response.ok && ![303, 307, 308].includes(response.status)) {
+    const text = await response.text();
+    throw new Error(`${label} failed: ${response.status} ${text}`);
+  }
+}
+
+async function main() {
+  console.log(`Smoke test target: ${baseUrl}`);
+
+  const sample = await readFile("samples/sample_meeting.md");
+  const formData = new FormData();
+  formData.append("file", new Blob([sample], { type: "text/markdown" }), "sample_meeting.md");
+  const uploadResponse = await fetch(`${baseUrl}/api/upload`, { method: "POST", body: formData });
+  await assertOk(uploadResponse, "upload");
+  const uploadPayload = await uploadResponse.json();
+  const sourceFileId = uploadPayload.sourceFile.id as string;
+  console.log(`OK upload: ${sourceFileId}`);
+
+  const runForm = new FormData();
+  runForm.append("sourceFileId", sourceFileId);
+  const runResponse = await fetch(`${baseUrl}/api/runs`, { method: "POST", body: runForm, redirect: "manual" });
+  await assertOk(runResponse, "create run");
+  const location = runResponse.headers.get("location");
+  const routeRunId = location?.split("/").pop();
+  if (!routeRunId) throw new Error("create run did not return a route id.");
+  console.log(`OK create run: ${routeRunId}`);
+
+  const generateResponse = await fetch(`${baseUrl}/api/generate`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ routeRunId }),
+  });
+  await assertOk(generateResponse, "generate");
+  console.log("OK generate");
+
+  const saveResponse = await fetch(`${baseUrl}/api/runs/${routeRunId}`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ editedOutput: "# Smoke Test Output\n\n## 行动项\n- 任务：验证链路\n  - Owner：待确认\n  - Deadline：待确认\n  - 证据：smoke test" }),
+  });
+  await assertOk(saveResponse, "save");
+  console.log("OK save");
+
+  const failureResponse = await fetch(`${baseUrl}/api/failure-cards`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      routeRunId,
+      failureType: "FORMAT_ERROR",
+      severity: "P2",
+      description: "Smoke test failure card",
+      originalOutput: "original",
+      userRevision: "revision",
+    }),
+  });
+  await assertOk(failureResponse, "failure card");
+  const failurePayload = await failureResponse.json();
+  const failureCardId = failurePayload.card.id as string;
+  console.log(`OK failure card: ${failureCardId}`);
+
+  const evalResponse = await fetch(`${baseUrl}/api/eval-cases`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ routeRunId, failureCardId }),
+  });
+  await assertOk(evalResponse, "eval case");
+  console.log("OK eval case");
+
+  const exportResponse = await fetch(`${baseUrl}/api/export`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ routeRunId }),
+  });
+  await assertOk(exportResponse, "export");
+  console.log("OK export");
+
+  console.log("Smoke test passed.");
+}
+
+main().catch((error) => {
+  console.error(error);
+  process.exit(1);
+});

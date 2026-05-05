@@ -1,13 +1,4 @@
-type MeetingJson = {
-  title?: string;
-  fiveLineSummary?: string[];
-  detailedNotes?: Array<{ topic?: string; points?: string[] }>;
-  keyChanges?: Array<{ change?: string; evidence?: string }>;
-  actionItems?: Array<{ task?: string; owner?: string; deadline?: string; evidence?: string }>;
-  openQuestions?: string[];
-  memoryCandidates?: Array<{ type?: string; title?: string; content?: string }>;
-  qualityWarnings?: string[];
-};
+import { MeetingJson, normalizeMeetingJson } from "./meeting";
 
 function list(items: string[] | undefined) {
   if (!items?.length) return "- 待补充";
@@ -77,5 +68,5 @@ export function renderMeetingMarkdown(data: MeetingJson) {
 
 export function safeJsonParse(raw: string): MeetingJson {
   const trimmed = raw.trim().replace(/^```json\s*/i, "").replace(/```$/i, "").trim();
-  return JSON.parse(trimmed) as MeetingJson;
+  return normalizeMeetingJson(JSON.parse(trimmed));
 }
