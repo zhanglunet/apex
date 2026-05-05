@@ -1,26 +1,36 @@
 import Link from "next/link";
-import { AlertTriangle, CheckCircle2, FileText, PlayCircle } from "lucide-react";
+import { AlertTriangle, CheckCircle2, ClipboardCheck, FileText, PlayCircle, ShieldCheck } from "lucide-react";
 import { AppShell } from "@/components/AppShell";
 import { prisma } from "@/lib/db";
+import { getQualityLabel, getQualityState } from "@/lib/quality-report";
 
 export default async function DashboardPage() {
-  const [files, runs, pendingRuns, failures, recentRuns] = await Promise.all([
+  const [files, runs, pendingRuns, failures, openFailures, activeEvals, qualityRuns, recentRuns] = await Promise.all([
     prisma.sourceFile.count(),
     prisma.routeRun.count(),
     prisma.routeRun.count({ where: { status: { in: ["DRAFT", "READY"] } } }),
     prisma.failureCard.count(),
+    prisma.failureCard.count({ where: { status: "OPEN" } }),
+    prisma.evalCase.count({ where: { status: "ACTIVE" } }),
+    prisma.routeRun.findMany({
+      where: { qualityJson: { not: null } },
+      select: { qualityJson: true },
+    }),
     prisma.routeRun.findMany({
       orderBy: { updatedAt: "desc" },
       take: 5,
       include: { sourceFile: true },
     }),
   ]);
+  const blockingQualityRuns = qualityRuns.filter((run) => getQualityState(run.qualityJson) === "blocking").length;
 
   const stats = [
     { label: "上传文件", value: files, icon: FileText },
     { label: "Route Runs", value: runs, icon: PlayCircle },
     { label: "待审核", value: pendingRuns, icon: CheckCircle2 },
-    { label: "Failure Cards", value: failures, icon: AlertTriangle },
+    { label: "阻断质量项", value: blockingQualityRuns, icon: ShieldCheck },
+    { label: "Open Failures", value: openFailures, icon: AlertTriangle },
+    { label: "Active Evals", value: activeEvals, icon: ClipboardCheck },
   ];
 
   return (
@@ -36,7 +46,7 @@ export default async function DashboardPage() {
           </Link>
         </div>
 
-        <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {stats.map((stat) => {
             const Icon = stat.icon;
             return (
@@ -51,6 +61,24 @@ export default async function DashboardPage() {
           })}
         </section>
 
+        <section className="grid gap-4 lg:grid-cols-3">
+          <Link href="/failure-ops?status=OPEN" className="rounded border border-line bg-white p-4 hover:bg-panel">
+            <div className="text-sm font-medium text-ink">失败样本待处理</div>
+            <div className="mt-2 text-2xl font-semibold text-ink">{openFailures}</div>
+            <p className="mt-2 text-xs leading-5 text-muted">进入 Failure Ops 关闭、修复或转为回归样本。</p>
+          </Link>
+          <Link href="/evals?status=ACTIVE" className="rounded border border-line bg-white p-4 hover:bg-panel">
+            <div className="text-sm font-medium text-ink">活跃回归样本</div>
+            <div className="mt-2 text-2xl font-semibold text-ink">{activeEvals}</div>
+            <p className="mt-2 text-xs leading-5 text-muted">查看当前会进入后续回归验证的 Eval Cases。</p>
+          </Link>
+          <div className="rounded border border-line bg-white p-4">
+            <div className="text-sm font-medium text-ink">历史 Failure Cards</div>
+            <div className="mt-2 text-2xl font-semibold text-ink">{failures}</div>
+            <p className="mt-2 text-xs leading-5 text-muted">累计质量问题数量，用于观察质量运营沉淀速度。</p>
+          </div>
+        </section>
+
         <section className="rounded border border-line bg-white">
           <div className="border-b border-line px-5 py-4">
             <h2 className="text-base font-semibold text-ink">最近任务</h2>
@@ -59,17 +87,25 @@ export default async function DashboardPage() {
             {recentRuns.length === 0 ? (
               <div className="px-5 py-8 text-sm text-muted">还没有任务。先去 Inbox 上传一份会议转录。</div>
             ) : (
-              recentRuns.map((run) => (
-                <Link key={run.id} href={`/runs/${run.id}`} className="block px-5 py-4 hover:bg-panel">
-                  <div className="flex items-center justify-between gap-4">
-                    <div>
-                      <div className="font-medium text-ink">{run.title}</div>
-                      <div className="mt-1 text-xs text-muted">{run.sourceFile.filename}</div>
+              recentRuns.map((run) => {
+                const qualityState = getQualityState(run.qualityJson);
+                return (
+                  <Link key={run.id} href={`/runs/${run.id}`} className="block px-5 py-4 hover:bg-panel">
+                    <div className="flex items-center justify-between gap-4">
+                      <div>
+                        <div className="font-medium text-ink">{run.title}</div>
+                        <div className="mt-1 text-xs text-muted">{run.sourceFile.filename}</div>
+                      </div>
+                      <div className="flex flex-wrap justify-end gap-2">
+                        <span className="rounded border border-line px-2 py-1 text-xs text-muted">{run.status}</span>
+                        <span className={qualityState === "blocking" ? "rounded border border-red-200 bg-red-50 px-2 py-1 text-xs text-red-700" : "rounded border border-line px-2 py-1 text-xs text-muted"}>
+                          {getQualityLabel(qualityState)}
+                        </span>
+                      </div>
                     </div>
-                    <span className="rounded border border-line px-2 py-1 text-xs text-muted">{run.status}</span>
-                  </div>
-                </Link>
-              ))
+                  </Link>
+                );
+              })
             )}
           </div>
         </section>

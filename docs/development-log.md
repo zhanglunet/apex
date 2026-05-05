@@ -68,3 +68,35 @@ Turn the Eval Cases list from a read-only inventory into a small operational wor
 - Extended `npm run test:smoke` to validate Eval Case status updates.
 - Verified `npm run build` on 2026-05-05.
 - Verified `APP_URL=http://localhost:3001 npm run test:smoke` on 2026-05-05.
+
+## 2026-05-05 - v0.1.3 Quality Health Dashboard Plan
+
+### Goal
+
+Make Dashboard useful as a quality-control entry point, not only a volume summary. The current R1 loop now has quality checks, Failure Cards, and Eval Cases, but Dashboard does not expose quality risk or regression coverage at a glance.
+
+### Scope
+
+- Add shared helpers for parsing RouteRun `qualityJson` safely.
+- Show blocking quality run count on Dashboard.
+- Show Open Failure Card count and Active Eval Case count on Dashboard.
+- Add a compact Quality Health section with direct links to the right workbench.
+- Show per-run quality status in the recent task list.
+- Bump package version from `0.1.2` to `0.1.3`.
+
+### Acceptance Criteria
+
+- Dashboard surfaces quality blockers without opening individual runs.
+- Recent tasks show whether quality checks passed, have blockers, or are not generated yet.
+- Invalid or missing `qualityJson` does not crash Dashboard.
+- `npm run build` and `npm run test:smoke` pass.
+- The release is committed, tagged, and pushed to `https://github.com/zhanglunet/apex`.
+
+### Completion Record
+
+- Added `lib/quality-report.ts` for safe quality report parsing and status labels.
+- Added Dashboard quality metrics for blocking runs, Open Failures, and Active Evals.
+- Added a compact Quality Health section with links into Failure Ops and Evals.
+- Added per-run quality badges in the recent task list.
+- Verified `npm run build` on 2026-05-05.
+- Verified `APP_URL=http://localhost:3001 npm run test:smoke` on 2026-05-05.
