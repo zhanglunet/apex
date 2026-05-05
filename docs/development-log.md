@@ -197,3 +197,38 @@ Prevent low-quality or invalid records from entering the R1 quality loop. Failur
 - Extended smoke test with negative API assertions for empty and invalid inputs.
 - Verified `npm run build` on 2026-05-05.
 - Verified `APP_URL=http://localhost:3001 npm run test:smoke` on 2026-05-05.
+
+## 2026-05-05 - v0.1.7 Runs Workbench Plan
+
+### Goal
+
+Add a full RouteRun workbench. Users can currently reach only recent runs from Dashboard or runs attached to uploaded files in Inbox, which makes older reviewed work hard to find during continuous use.
+
+### Scope
+
+- Add `/runs` page listing all RouteRuns.
+- Add status filtering for `DRAFT`, `GENERATING`, `READY`, and `REVIEWED`.
+- Show source filename, updated time, and quality status for each run.
+- Add Runs navigation to `AppShell`.
+- Link Dashboard Route Runs stat to `/runs`.
+- Extend smoke test to check `/runs` and `/runs?status=REVIEWED`.
+- Bump package version from `0.1.6` to `0.1.7`.
+
+### Acceptance Criteria
+
+- `/runs` lists RouteRuns newest first.
+- `/runs?status=REVIEWED` filters reviewed runs.
+- Each row links to the Run Detail page.
+- Quality labels reuse the shared quality report helper.
+- `npm run build` and `npm run test:smoke` pass.
+- The release is committed, tagged, and pushed to `https://github.com/zhanglunet/apex`.
+
+### Completion Record
+
+- Added `/runs` RouteRun workbench with status filtering.
+- Added Runs navigation to `AppShell`.
+- Linked Dashboard stats into their relevant workbenches.
+- Reused shared quality labels in the RouteRun list.
+- Extended smoke test to check `/runs` and `/runs?status=REVIEWED`.
+- Verified `npm run build` on 2026-05-05.
+- Verified `APP_URL=http://localhost:3001 npm run test:smoke` on 2026-05-05.

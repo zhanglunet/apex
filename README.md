@@ -172,6 +172,7 @@ flowchart LR
 | --- | --- | --- |
 | Dashboard | `/dashboard` | 查看整体状态和最近任务 |
 | Inbox | `/inbox` | 上传材料并创建 R1 任务 |
+| Runs | `/runs` | 查看和筛选全部 R1 RouteRuns |
 | Run Detail | `/runs/[id]` | 生成、编辑、导出、记录失败、查看质量检查 |
 | Memory Library | `/memory` | 跨会议浏览和筛选沉淀出的 Memory Objects |
 | Failure Ops | `/failure-ops` | 集中管理 Failure Cards |
@@ -356,7 +357,7 @@ V1.1 已完成第一轮开发：
 
 目标：让 R1 输出可以被连续使用、复盘和改进。
 
-当前状态：正在开发，核心能力已合入主分支。`v0.1.1` 已补齐 Failure Card 生成 Eval Case 的幂等保护，避免重复沉淀相同回归样本。`v0.1.2` 增加 Eval Cases 状态筛选和状态更新，让回归样本池可以运营。`v0.1.3` 在 Dashboard 增加质量健康指标，让阻断质量项、Open Failure 和 Active Eval 可以一屏看到。`v0.1.4` 增加 Memory Library，让会议中沉淀出的组织记忆可以跨任务浏览。`v0.1.5` 扩展 smoke test 到核心工作台页面，降低持续迭代时的页面回归风险。`v0.1.6` 增加 API 输入校验，避免空修订、空失败描述和非法状态污染质量闭环数据。
+当前状态：正在开发，核心能力已合入主分支。`v0.1.1` 已补齐 Failure Card 生成 Eval Case 的幂等保护，避免重复沉淀相同回归样本。`v0.1.2` 增加 Eval Cases 状态筛选和状态更新，让回归样本池可以运营。`v0.1.3` 在 Dashboard 增加质量健康指标，让阻断质量项、Open Failure 和 Active Eval 可以一屏看到。`v0.1.4` 增加 Memory Library，让会议中沉淀出的组织记忆可以跨任务浏览。`v0.1.5` 扩展 smoke test 到核心工作台页面，降低持续迭代时的页面回归风险。`v0.1.6` 增加 API 输入校验，避免空修订、空失败描述和非法状态污染质量闭环数据。`v0.1.7` 增加 Runs 工作台，让全部 R1 任务可以按状态浏览。
 
 重点：
 

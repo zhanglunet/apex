@@ -28,6 +28,7 @@ async function main() {
 
   await assertPage("/dashboard");
   await assertPage("/inbox");
+  await assertPage("/runs");
 
   const sample = await readFile("samples/sample_meeting.md");
   const formData = new FormData();
@@ -161,6 +162,7 @@ async function main() {
   console.log("OK export");
 
   await assertPage(`/runs/${routeRunId}`);
+  await assertPage("/runs?status=REVIEWED");
   await assertPage("/failure-ops");
   await assertPage("/failure-ops?status=OPEN");
   await assertPage("/evals");

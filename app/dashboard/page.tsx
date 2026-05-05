@@ -26,13 +26,13 @@ export default async function DashboardPage() {
   const blockingQualityRuns = qualityRuns.filter((run) => getQualityState(run.qualityJson) === "blocking").length;
 
   const stats = [
-    { label: "上传文件", value: files, icon: FileText },
-    { label: "Route Runs", value: runs, icon: PlayCircle },
-    { label: "待审核", value: pendingRuns, icon: CheckCircle2 },
-    { label: "阻断质量项", value: blockingQualityRuns, icon: ShieldCheck },
-    { label: "Open Failures", value: openFailures, icon: AlertTriangle },
-    { label: "Active Evals", value: activeEvals, icon: ClipboardCheck },
-    { label: "Memory Objects", value: memories, icon: Database },
+    { label: "上传文件", value: files, icon: FileText, href: "/inbox" },
+    { label: "Route Runs", value: runs, icon: PlayCircle, href: "/runs" },
+    { label: "待审核", value: pendingRuns, icon: CheckCircle2, href: "/runs?status=READY" },
+    { label: "阻断质量项", value: blockingQualityRuns, icon: ShieldCheck, href: "/runs" },
+    { label: "Open Failures", value: openFailures, icon: AlertTriangle, href: "/failure-ops?status=OPEN" },
+    { label: "Active Evals", value: activeEvals, icon: ClipboardCheck, href: "/evals?status=ACTIVE" },
+    { label: "Memory Objects", value: memories, icon: Database, href: "/memory" },
   ];
 
   return (
@@ -52,13 +52,13 @@ export default async function DashboardPage() {
           {stats.map((stat) => {
             const Icon = stat.icon;
             return (
-              <div key={stat.label} className="rounded border border-line bg-white p-4">
+              <Link key={stat.label} href={stat.href} className="rounded border border-line bg-white p-4 hover:bg-panel">
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-muted">{stat.label}</span>
                   <Icon size={18} className="text-accent" />
                 </div>
                 <div className="mt-3 text-3xl font-semibold text-ink">{stat.value}</div>
-              </div>
+              </Link>
             );
           })}
         </section>
