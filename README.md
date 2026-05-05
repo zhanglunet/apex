@@ -357,7 +357,22 @@ V1.1 已完成第一轮开发：
 
 目标：让 R1 输出可以被连续使用、复盘和改进。
 
-当前状态：正在开发，核心能力已合入主分支。`v0.1.1` 已补齐 Failure Card 生成 Eval Case 的幂等保护，避免重复沉淀相同回归样本。`v0.1.2` 增加 Eval Cases 状态筛选和状态更新，让回归样本池可以运营。`v0.1.3` 在 Dashboard 增加质量健康指标，让阻断质量项、Open Failure 和 Active Eval 可以一屏看到。`v0.1.4` 增加 Memory Library，让会议中沉淀出的组织记忆可以跨任务浏览。`v0.1.5` 扩展 smoke test 到核心工作台页面，降低持续迭代时的页面回归风险。`v0.1.6` 增加 API 输入校验，避免空修订、空失败描述和非法状态污染质量闭环数据。`v0.1.7` 增加 Runs 工作台，让全部 R1 任务可以按状态浏览。`v0.1.8` 加强 Markdown 导出校验，避免生成空导出文件。`v0.1.9` 让 Run Detail 安全解析质量报告，避免坏历史数据导致页面崩溃。
+当前状态：正在开发，核心能力已合入主分支。详细开发记录见 [docs/development-log.md](docs/development-log.md)。
+
+### Release Notes
+
+| 版本 | 重点 |
+| --- | --- |
+| `v0.1.1` | Failure Card 生成 Eval Case 增加幂等保护 |
+| `v0.1.2` | Eval Cases 增加状态筛选和状态更新 |
+| `v0.1.3` | Dashboard 增加质量健康指标 |
+| `v0.1.4` | 增加 Memory Library |
+| `v0.1.5` | smoke test 覆盖核心工作台页面 |
+| `v0.1.6` | API 输入校验，防止无效质量数据写入 |
+| `v0.1.7` | 增加 Runs 工作台和状态筛选 |
+| `v0.1.8` | Markdown 导出增加空输出保护 |
+| `v0.1.9` | Run Detail 安全解析质量报告 |
+| `v0.1.10` | README Release Notes 表格化 |
 
 重点：
 

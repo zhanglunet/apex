@@ -293,3 +293,30 @@ Make Run Detail resilient to malformed historical `qualityJson`. Dashboard and R
 - Kept Quality Panel rendering unchanged for valid reports.
 - Verified `npm run build` on 2026-05-05.
 - Verified `APP_URL=http://localhost:3001 npm run test:smoke` on 2026-05-05.
+
+## 2026-05-06 - v0.1.10 README Release Notes Plan
+
+### Goal
+
+Keep public project documentation readable as autonomous iteration continues. The README currently stores release progress as one long sentence, which is hard to scan and easy to damage during future updates.
+
+### Scope
+
+- Replace the long inline V1.1 release sentence with a compact Release Notes table.
+- Keep the detailed development history in `docs/development-log.md`.
+- Bump package version from `0.1.9` to `0.1.10`.
+
+### Acceptance Criteria
+
+- README shows `v0.1.1` through `v0.1.10` as table rows.
+- The stage status remains clear and references `docs/development-log.md`.
+- `npm run build` and `npm run test:smoke` pass.
+- The release is committed, tagged, and pushed to `https://github.com/zhanglunet/apex`.
+
+### Completion Record
+
+- Replaced the long inline V1.1 version sentence with a Release Notes table.
+- Added `v0.1.10` to README release history.
+- Kept detailed iteration records in this development log.
+- Verified `npm run build` on 2026-05-06.
+- Verified `APP_URL=http://localhost:3001 npm run test:smoke` on 2026-05-06.
