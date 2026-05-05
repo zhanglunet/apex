@@ -264,3 +264,32 @@ Harden Markdown export so the system does not create empty export files or retur
 - Extended smoke test with missing id and empty output export assertions.
 - Verified `npm run build` on 2026-05-05.
 - Verified `APP_URL=http://localhost:3001 npm run test:smoke` on 2026-05-05.
+
+## 2026-05-05 - v0.1.9 Safe Quality Panel Plan
+
+### Goal
+
+Make Run Detail resilient to malformed historical `qualityJson`. Dashboard and Runs already use a safe quality parser, but RunEditor still calls `JSON.parse` directly and can crash the page if stored quality data is invalid.
+
+### Scope
+
+- Reuse `parseQualityReport` in `RunEditor`.
+- Remove the local duplicate `QualityReport` type from `RunEditor`.
+- Keep Quality Panel behavior unchanged for valid reports.
+- Treat invalid or missing quality data as not generated.
+- Bump package version from `0.1.8` to `0.1.9`.
+
+### Acceptance Criteria
+
+- Run Detail does not throw when `qualityJson` is malformed.
+- Valid Quality Panel reports render as before.
+- `npm run build` and `npm run test:smoke` pass.
+- The release is committed, tagged, and pushed to `https://github.com/zhanglunet/apex`.
+
+### Completion Record
+
+- Updated `RunEditor` to use `parseQualityReport`.
+- Removed duplicate local Quality Report typing from the client component.
+- Kept Quality Panel rendering unchanged for valid reports.
+- Verified `npm run build` on 2026-05-05.
+- Verified `APP_URL=http://localhost:3001 npm run test:smoke` on 2026-05-05.

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { AlertTriangle, Download, Save, Sparkles } from "lucide-react";
+import { parseQualityReport } from "@/lib/quality-report";
 
 type FailureCard = {
   id: string;
@@ -17,11 +18,6 @@ type MemoryObject = {
   type: string;
   title: string;
   content: string;
-};
-
-type QualityReport = {
-  checks?: Array<{ id: string; label: string; passed: boolean; detail: string }>;
-  summary?: { passed: number; total: number; blocking: boolean };
 };
 
 type RunView = {
@@ -128,7 +124,7 @@ export function RunEditor({ run }: { run: RunView }) {
     }
   }
 
-  const quality = run.qualityJson ? (JSON.parse(run.qualityJson) as QualityReport) : null;
+  const quality = parseQualityReport(run.qualityJson);
 
   return (
     <div className="flex flex-col gap-5">
