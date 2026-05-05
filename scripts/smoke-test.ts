@@ -69,6 +69,8 @@ async function main() {
     body: JSON.stringify({ routeRunId, failureCardId }),
   });
   await assertOk(evalResponse, "eval case");
+  const evalPayload = await evalResponse.json();
+  const evalCaseId = evalPayload.evalCase.id as string;
   console.log("OK eval case");
 
   const duplicateEvalResponse = await fetch(`${baseUrl}/api/eval-cases`, {
@@ -82,6 +84,18 @@ async function main() {
     throw new Error("duplicate eval case did not return the existing record.");
   }
   console.log("OK duplicate eval guard");
+
+  const evalStatusResponse = await fetch(`${baseUrl}/api/eval-cases/${evalCaseId}`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ status: "PAUSED" }),
+  });
+  await assertOk(evalStatusResponse, "eval case status update");
+  const evalStatusPayload = await evalStatusResponse.json();
+  if (evalStatusPayload.evalCase.status !== "PAUSED") {
+    throw new Error("eval case status update did not persist.");
+  }
+  console.log("OK eval case status update");
 
   const exportResponse = await fetch(`${baseUrl}/api/export`, {
     method: "POST",

@@ -35,3 +35,36 @@ Ship a small reliability release for the R1 quality loop. The current Failure Op
 - Added duplicate Eval Case coverage to `npm run test:smoke`.
 - Verified `npm run build` on 2026-05-05.
 - Verified `APP_URL=http://localhost:3001 npm run test:smoke` on 2026-05-05.
+
+## 2026-05-05 - v0.1.2 Eval Ops Plan
+
+### Goal
+
+Turn the Eval Cases list from a read-only inventory into a small operational workbench. After Failure Cards are converted into Eval Cases, users need to filter active samples and retire or reactivate samples without editing the database.
+
+### Scope
+
+- Add `PATCH /api/eval-cases/[id]` for status updates.
+- Add status filtering to `/evals`.
+- Add per-row Eval Case actions for status changes.
+- Show failure metadata and scoring rubric details where available.
+- Extend smoke test to update an Eval Case status.
+- Bump package version from `0.1.1` to `0.1.2`.
+
+### Acceptance Criteria
+
+- `/evals?status=ACTIVE` lists only active Eval Cases.
+- An Eval Case can be changed between `ACTIVE`, `PAUSED`, and `RETIRED` from the UI.
+- `PATCH /api/eval-cases/[id]` rejects unsupported statuses.
+- Smoke test covers Eval Case status update.
+- The release is committed, tagged, and pushed to `https://github.com/zhanglunet/apex`.
+
+### Completion Record
+
+- Added `PATCH /api/eval-cases/[id]` with status validation.
+- Added `/evals` status filtering.
+- Added Eval Case row actions for `ACTIVE`, `PAUSED`, and `RETIRED`.
+- Displayed source failure metadata and scoring rubric notes on Eval Cases.
+- Extended `npm run test:smoke` to validate Eval Case status updates.
+- Verified `npm run build` on 2026-05-05.
+- Verified `APP_URL=http://localhost:3001 npm run test:smoke` on 2026-05-05.
