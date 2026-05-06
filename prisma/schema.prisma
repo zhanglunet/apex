@@ -33,6 +33,7 @@ model RouteRun {
   failureCards    FailureCard[]
   memoryObjects   MemoryObject[]
   evalCases       EvalCase[]
+  evidenceItems   EvidenceItem[]
 }
 
 model FailureCard {
@@ -71,4 +72,16 @@ model EvalCase {
   createdAt         DateTime     @default(now())
   routeRun          RouteRun     @relation(fields: [routeRunId], references: [id])
   failureCard       FailureCard? @relation(fields: [failureCardId], references: [id])
+}
+
+model EvidenceItem {
+  id           String   @id @default(cuid())
+  routeRunId   String
+  section      String
+  claim        String
+  evidenceText String
+  sourceHint   String?
+  status       String   @default("SUPPORTED")
+  createdAt    DateTime @default(now())
+  routeRun     RouteRun @relation(fields: [routeRunId], references: [id])
 }

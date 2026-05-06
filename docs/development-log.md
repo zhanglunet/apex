@@ -348,3 +348,34 @@ Add a lightweight operational health endpoint for local development and future d
 - Added health endpoint coverage to smoke test.
 - Verified `npm run build` on 2026-05-06.
 - Verified `APP_URL=http://localhost:3001 npm run test:smoke` on 2026-05-06.
+
+## 2026-05-06 - v0.1.12 Evidence Model Plan
+
+### Goal
+
+Start V1.2 Evidence Layer by adding the EvidenceItem data model and deterministic extraction helper. This prepares the codebase for writing evidence objects during R1 generation without changing runtime behavior in the same patch.
+
+### Scope
+
+- Add `EvidenceItem` to Prisma schema.
+- Add `EvidenceItem` table and indexes to `prisma/init.sql`.
+- Add `lib/evidence.ts` with Evidence section/status types.
+- Add deterministic evidence classification and extraction from `MeetingJson`.
+- Bump package version from `0.1.11` to `0.1.12`.
+
+### Acceptance Criteria
+
+- Prisma schema contains `EvidenceItem` and `RouteRun.evidenceItems`.
+- `prisma/init.sql` can create the EvidenceItem table.
+- Evidence helper classifies `SUPPORTED`, `WEAK`, and `MISSING` without LLM calls.
+- `npm run build` passes.
+- The release is committed, tagged, and pushed to `https://github.com/zhanglunet/apex`.
+
+### Completion Record
+
+- Added `EvidenceItem` and `RouteRun.evidenceItems` to Prisma schema.
+- Added EvidenceItem table and indexes to `prisma/init.sql`.
+- Added `lib/evidence.ts` with deterministic Evidence extraction and classification.
+- Verified `npm run db:generate` on 2026-05-06.
+- Verified `npm run build` on 2026-05-06.
+- Verified `APP_URL=http://localhost:3001 npm run test:smoke` on 2026-05-06.

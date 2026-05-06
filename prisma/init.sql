@@ -65,3 +65,19 @@ CREATE TABLE IF NOT EXISTS "EvalCase" (
 
 CREATE INDEX IF NOT EXISTS "EvalCase_routeRunId_idx" ON "EvalCase" ("routeRunId");
 CREATE INDEX IF NOT EXISTS "EvalCase_failureCardId_idx" ON "EvalCase" ("failureCardId");
+
+CREATE TABLE IF NOT EXISTS "EvidenceItem" (
+  "id" TEXT NOT NULL PRIMARY KEY,
+  "routeRunId" TEXT NOT NULL,
+  "section" TEXT NOT NULL,
+  "claim" TEXT NOT NULL,
+  "evidenceText" TEXT NOT NULL,
+  "sourceHint" TEXT,
+  "status" TEXT NOT NULL DEFAULT 'SUPPORTED',
+  "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT "EvidenceItem_routeRunId_fkey" FOREIGN KEY ("routeRunId") REFERENCES "RouteRun" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
+);
+
+CREATE INDEX IF NOT EXISTS "EvidenceItem_routeRunId_idx" ON "EvidenceItem" ("routeRunId");
+CREATE INDEX IF NOT EXISTS "EvidenceItem_status_idx" ON "EvidenceItem" ("status");
+CREATE INDEX IF NOT EXISTS "EvidenceItem_section_idx" ON "EvidenceItem" ("section");
