@@ -20,6 +20,15 @@ type MemoryObject = {
   content: string;
 };
 
+type EvidenceItem = {
+  id: string;
+  section: string;
+  claim: string;
+  evidenceText: string;
+  sourceHint: string | null;
+  status: string;
+};
+
 type RunView = {
   id: string;
   title: string;
@@ -31,7 +40,14 @@ type RunView = {
   sourceFilename: string;
   failureCards: FailureCard[];
   memoryObjects: MemoryObject[];
+  evidenceItems: EvidenceItem[];
 };
+
+function evidenceStatusClass(status: string) {
+  if (status === "SUPPORTED") return "border-green-200 bg-green-50 text-green-700";
+  if (status === "WEAK") return "border-yellow-200 bg-yellow-50 text-yellow-700";
+  return "border-red-200 bg-red-50 text-red-700";
+}
 
 export function RunEditor({ run }: { run: RunView }) {
   const [output, setOutput] = useState(run.editedOutput || run.generatedOutput || "");
@@ -125,6 +141,11 @@ export function RunEditor({ run }: { run: RunView }) {
   }
 
   const quality = parseQualityReport(run.qualityJson);
+  const evidenceSummary = {
+    supported: run.evidenceItems.filter((item) => item.status === "SUPPORTED").length,
+    weak: run.evidenceItems.filter((item) => item.status === "WEAK").length,
+    missing: run.evidenceItems.filter((item) => item.status === "MISSING").length,
+  };
 
   return (
     <div className="flex flex-col gap-5">
@@ -217,6 +238,34 @@ export function RunEditor({ run }: { run: RunView }) {
               <p className="text-sm text-muted">生成后会从 memoryCandidates 写入本任务关联记忆。</p>
             )}
           </div>
+        </div>
+
+        <div className="rounded border border-line bg-white p-5 lg:col-span-2">
+          <h2 className="text-base font-semibold text-ink">Evidence Panel</h2>
+          {run.evidenceItems.length ? (
+            <>
+              <div className="mt-2 flex flex-wrap gap-2 text-xs">
+                <span className="rounded border border-green-200 bg-green-50 px-2 py-1 text-green-700">SUPPORTED：{evidenceSummary.supported}</span>
+                <span className="rounded border border-yellow-200 bg-yellow-50 px-2 py-1 text-yellow-700">WEAK：{evidenceSummary.weak}</span>
+                <span className="rounded border border-red-200 bg-red-50 px-2 py-1 text-red-700">MISSING：{evidenceSummary.missing}</span>
+              </div>
+              <div className="mt-4 grid gap-3 lg:grid-cols-2">
+                {run.evidenceItems.map((item) => (
+                  <div key={item.id} className="rounded border border-line bg-panel p-3">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span className="rounded border border-line bg-white px-2 py-0.5 text-xs text-muted">{item.section}</span>
+                      <span className={`rounded border px-2 py-0.5 text-xs font-medium ${evidenceStatusClass(item.status)}`}>{item.status}</span>
+                    </div>
+                    <p className="mt-3 text-sm font-medium leading-6 text-ink">{item.claim}</p>
+                    <p className="mt-2 text-sm leading-6 text-muted">{item.evidenceText}</p>
+                    {item.sourceHint ? <div className="mt-2 text-xs text-muted">来源字段：{item.sourceHint}</div> : null}
+                  </div>
+                ))}
+              </div>
+            </>
+          ) : (
+            <p className="mt-3 text-sm text-muted">生成后会从关键变化、行动项、开放问题和质量警告中提取 Evidence Items。</p>
+          )}
         </div>
 
         <div className="rounded border border-line bg-white p-5">

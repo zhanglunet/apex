@@ -412,3 +412,33 @@ Connect Evidence extraction to the R1 generation flow. After this version, gener
 - Verified `npm run db:push` on 2026-05-06.
 - Verified `npm run build` on 2026-05-06.
 - Verified `APP_URL=http://localhost:3001 npm run test:smoke` on 2026-05-06.
+
+## 2026-05-06 - v0.1.14 Run Evidence Panel Plan
+
+### Goal
+
+Expose Evidence Items inside Run Detail so users can inspect the evidence status of a generated meeting output without leaving the task workspace.
+
+### Scope
+
+- Query Evidence Items in `app/runs/[id]/page.tsx`.
+- Pass Evidence Items to `RunEditor`.
+- Add Evidence Panel with SUPPORTED / WEAK / MISSING counts.
+- Render claim, evidence text, section, status, and source hint.
+- Bump package version from `0.1.13` to `0.1.14`.
+
+### Acceptance Criteria
+
+- Run Detail shows Evidence Panel for generated runs.
+- Empty runs show a clear Evidence empty state.
+- Evidence status is visually distinct.
+- `npm run build` and `npm run test:smoke` pass.
+- The release is committed, tagged, and pushed to `https://github.com/zhanglunet/apex`.
+
+### Completion Record
+
+- Run Detail now queries Evidence Items.
+- `RunEditor` renders Evidence Panel with status counts.
+- Evidence cards show section, status, claim, evidence text, and source hint.
+- Verified `npm run build` on 2026-05-06.
+- Verified `APP_URL=http://localhost:3001 npm run test:smoke` on 2026-05-06.

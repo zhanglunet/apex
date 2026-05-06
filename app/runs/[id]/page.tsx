@@ -11,6 +11,7 @@ export default async function RunDetailPage({ params }: { params: Promise<{ id: 
       sourceFile: true,
       failureCards: { orderBy: { createdAt: "desc" } },
       memoryObjects: { orderBy: { createdAt: "desc" } },
+      evidenceItems: { orderBy: { createdAt: "desc" } },
     },
   });
   if (!run) notFound();
@@ -40,6 +41,14 @@ export default async function RunDetailPage({ params }: { params: Promise<{ id: 
             type: item.type,
             title: item.title,
             content: item.content,
+          })),
+          evidenceItems: run.evidenceItems.map((item) => ({
+            id: item.id,
+            section: item.section,
+            claim: item.claim,
+            evidenceText: item.evidenceText,
+            sourceHint: item.sourceHint,
+            status: item.status,
           })),
         }}
       />
