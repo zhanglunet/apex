@@ -380,6 +380,7 @@ V1.1 已完成第一轮开发：
 | `v0.1.14` | Run Detail 增加 Evidence Panel |
 | `v0.1.15` | 增加 Evidence 工作台和 Dashboard 证据指标 |
 | `v0.1.16` | Evidence 缺口可创建 Failure Card |
+| `v0.1.17` | V1.2 Evidence Layer 发布说明与文档整理 |
 
 重点：
 
@@ -450,3 +451,4 @@ npm run test:smoke
 - [NEXT_VERSION_DEVELOPMENT_PLAN.md](NEXT_VERSION_DEVELOPMENT_PLAN.md)
 - [docs/development-log.md](docs/development-log.md)
 - [docs/v1.2-product-design.md](docs/v1.2-product-design.md)
+- [docs/v1.2-release-notes.md](docs/v1.2-release-notes.md)

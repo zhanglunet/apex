@@ -506,3 +506,31 @@ Connect Evidence gaps to the existing Failure Ops loop. Missing or weak evidence
 - Extended smoke test to create a Failure Card from a missing Evidence Item.
 - Verified `npm run build` on 2026-05-06.
 - Verified `APP_URL=http://localhost:3001 npm run test:smoke` on 2026-05-06.
+
+## 2026-05-06 - v0.1.17 V1.2 Release Notes Plan
+
+### Goal
+
+Package the V1.2 Evidence Layer iteration into clear documentation so the product direction, delivered capabilities, validation scope, and next-stage recommendations are easy to review.
+
+### Scope
+
+- Add `docs/v1.2-release-notes.md`.
+- Update README Release Notes with `v0.1.17`.
+- Link the new release notes from README.
+- Bump package version from `0.1.16` to `0.1.17`.
+
+### Acceptance Criteria
+
+- V1.2 release notes summarize `v0.1.12` through `v0.1.17`.
+- README links to the release notes.
+- `npm run build` and `npm run test:smoke` pass.
+- The release is committed, tagged, and pushed to `https://github.com/zhanglunet/apex`.
+
+### Completion Record
+
+- Added `docs/v1.2-release-notes.md`.
+- Added `v0.1.17` to README Release Notes.
+- Linked V1.2 release notes from README.
+- Verified `npm run build` on 2026-05-06.
+- Verified `APP_URL=http://localhost:3001 npm run test:smoke` on 2026-05-06.
