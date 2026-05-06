@@ -442,3 +442,36 @@ Expose Evidence Items inside Run Detail so users can inspect the evidence status
 - Evidence cards show section, status, claim, evidence text, and source hint.
 - Verified `npm run build` on 2026-05-06.
 - Verified `APP_URL=http://localhost:3001 npm run test:smoke` on 2026-05-06.
+
+## 2026-05-06 - v0.1.15 Evidence Workbench Plan
+
+### Goal
+
+Add an Evidence Workbench so evidence gaps can be reviewed across all R1 runs instead of only inside a single Run Detail page.
+
+### Scope
+
+- Add `/evidence` page.
+- Support status and section filters.
+- Add Evidence navigation to `AppShell`.
+- Add Evidence health metrics to Dashboard.
+- Extend smoke test to cover Evidence routes.
+- Bump package version from `0.1.14` to `0.1.15`.
+
+### Acceptance Criteria
+
+- `/evidence` lists Evidence Items newest first.
+- `/evidence?status=MISSING` filters missing evidence.
+- `/evidence?section=ACTION_ITEM` filters by section.
+- Dashboard links to Evidence health filters.
+- `npm run build` and `npm run test:smoke` pass.
+- The release is committed, tagged, and pushed to `https://github.com/zhanglunet/apex`.
+
+### Completion Record
+
+- Added `/evidence` Evidence Workbench with status and section filters.
+- Added Evidence navigation to `AppShell`.
+- Added Dashboard Evidence health metrics and filter links.
+- Extended smoke test to cover Evidence routes.
+- Verified `npm run build` on 2026-05-06.
+- Verified `APP_URL=http://localhost:3001 npm run test:smoke` on 2026-05-06.

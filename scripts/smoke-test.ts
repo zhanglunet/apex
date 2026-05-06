@@ -47,6 +47,7 @@ async function main() {
   await assertPage("/dashboard");
   await assertPage("/inbox");
   await assertPage("/runs");
+  await assertPage("/evidence");
 
   const sample = await readFile("samples/sample_meeting.md");
   const formData = new FormData();
@@ -205,6 +206,8 @@ async function main() {
   await assertPage("/failure-ops?status=OPEN");
   await assertPage("/evals");
   await assertPage("/evals?status=PAUSED");
+  await assertPage("/evidence?status=MISSING");
+  await assertPage("/evidence?section=ACTION_ITEM");
   await assertPage("/memory");
   await assertPage("/memory?type=EVENT");
 

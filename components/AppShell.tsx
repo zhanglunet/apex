@@ -1,10 +1,11 @@
 import Link from "next/link";
-import { Activity, AlertTriangle, ClipboardCheck, Database, Inbox, LayoutDashboard, PlayCircle } from "lucide-react";
+import { Activity, AlertTriangle, ClipboardCheck, Database, Inbox, LayoutDashboard, PlayCircle, ShieldCheck } from "lucide-react";
 
 const navItems = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/inbox", label: "Inbox", icon: Inbox },
   { href: "/runs", label: "Runs", icon: PlayCircle },
+  { href: "/evidence", label: "Evidence", icon: ShieldCheck },
   { href: "/memory", label: "Memory", icon: Database },
   { href: "/failure-ops", label: "Failure Ops", icon: AlertTriangle },
   { href: "/evals", label: "Evals", icon: ClipboardCheck },

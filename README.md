@@ -174,6 +174,7 @@ flowchart LR
 | Inbox | `/inbox` | 上传材料并创建 R1 任务 |
 | Runs | `/runs` | 查看和筛选全部 R1 RouteRuns |
 | Run Detail | `/runs/[id]` | 生成、编辑、导出、记录失败、查看质量检查 |
+| Evidence | `/evidence` | 集中查看和筛选 Evidence Items |
 | Memory Library | `/memory` | 跨会议浏览和筛选沉淀出的 Memory Objects |
 | Failure Ops | `/failure-ops` | 集中管理 Failure Cards |
 | Evals | `/evals` | 查看 Eval Cases |
@@ -377,6 +378,7 @@ V1.1 已完成第一轮开发：
 | `v0.1.12` | 增加 EvidenceItem 数据模型与证据抽取 helper |
 | `v0.1.13` | R1 生成后自动写入 Evidence Items |
 | `v0.1.14` | Run Detail 增加 Evidence Panel |
+| `v0.1.15` | 增加 Evidence 工作台和 Dashboard 证据指标 |
 
 重点：
 

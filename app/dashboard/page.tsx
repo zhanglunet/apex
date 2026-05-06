@@ -5,7 +5,7 @@ import { prisma } from "@/lib/db";
 import { getQualityLabel, getQualityState } from "@/lib/quality-report";
 
 export default async function DashboardPage() {
-  const [files, runs, pendingRuns, failures, openFailures, activeEvals, memories, qualityRuns, recentRuns] = await Promise.all([
+  const [files, runs, pendingRuns, failures, openFailures, activeEvals, memories, missingEvidence, weakEvidence, supportedEvidence, qualityRuns, recentRuns] = await Promise.all([
     prisma.sourceFile.count(),
     prisma.routeRun.count(),
     prisma.routeRun.count({ where: { status: { in: ["DRAFT", "READY"] } } }),
@@ -13,6 +13,9 @@ export default async function DashboardPage() {
     prisma.failureCard.count({ where: { status: "OPEN" } }),
     prisma.evalCase.count({ where: { status: "ACTIVE" } }),
     prisma.memoryObject.count(),
+    prisma.evidenceItem.count({ where: { status: "MISSING" } }),
+    prisma.evidenceItem.count({ where: { status: "WEAK" } }),
+    prisma.evidenceItem.count({ where: { status: "SUPPORTED" } }),
     prisma.routeRun.findMany({
       where: { qualityJson: { not: null } },
       select: { qualityJson: true },
@@ -33,6 +36,7 @@ export default async function DashboardPage() {
     { label: "Open Failures", value: openFailures, icon: AlertTriangle, href: "/failure-ops?status=OPEN" },
     { label: "Active Evals", value: activeEvals, icon: ClipboardCheck, href: "/evals?status=ACTIVE" },
     { label: "Memory Objects", value: memories, icon: Database, href: "/memory" },
+    { label: "Missing Evidence", value: missingEvidence, icon: ShieldCheck, href: "/evidence?status=MISSING" },
   ];
 
   return (
@@ -64,6 +68,21 @@ export default async function DashboardPage() {
         </section>
 
         <section className="grid gap-4 lg:grid-cols-4">
+          <Link href="/evidence?status=MISSING" className="rounded border border-line bg-white p-4 hover:bg-panel">
+            <div className="text-sm font-medium text-ink">缺证据项</div>
+            <div className="mt-2 text-2xl font-semibold text-ink">{missingEvidence}</div>
+            <p className="mt-2 text-xs leading-5 text-muted">进入 Evidence 工作台修复 MISSING 证据缺口。</p>
+          </Link>
+          <Link href="/evidence?status=WEAK" className="rounded border border-line bg-white p-4 hover:bg-panel">
+            <div className="text-sm font-medium text-ink">弱证据项</div>
+            <div className="mt-2 text-2xl font-semibold text-ink">{weakEvidence}</div>
+            <p className="mt-2 text-xs leading-5 text-muted">查看证据不足或仍需确认的输出项。</p>
+          </Link>
+          <Link href="/evidence?status=SUPPORTED" className="rounded border border-line bg-white p-4 hover:bg-panel">
+            <div className="text-sm font-medium text-ink">已支持证据项</div>
+            <div className="mt-2 text-2xl font-semibold text-ink">{supportedEvidence}</div>
+            <p className="mt-2 text-xs leading-5 text-muted">查看已有明确证据支撑的输出项。</p>
+          </Link>
           <Link href="/memory" className="rounded border border-line bg-white p-4 hover:bg-panel">
             <div className="text-sm font-medium text-ink">组织记忆沉淀</div>
             <div className="mt-2 text-2xl font-semibold text-ink">{memories}</div>
