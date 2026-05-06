@@ -373,6 +373,7 @@ V1.1 已完成第一轮开发：
 | `v0.1.8` | Markdown 导出增加空输出保护 |
 | `v0.1.9` | Run Detail 安全解析质量报告 |
 | `v0.1.10` | README Release Notes 表格化 |
+| `v0.1.11` | 增加 `/api/health` 服务健康检查 |
 
 重点：
 

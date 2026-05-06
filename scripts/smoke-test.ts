@@ -23,9 +23,20 @@ async function assertBadRequest(response: Response, label: string) {
   console.log(`OK validation: ${label}`);
 }
 
+async function assertHealth() {
+  const response = await fetch(`${baseUrl}/api/health`);
+  await assertOk(response, "health");
+  const payload = await response.json();
+  if (payload.status !== "ok" || !payload.version || !payload.counts) {
+    throw new Error("health response missing required fields.");
+  }
+  console.log(`OK health: ${payload.version}`);
+}
+
 async function main() {
   console.log(`Smoke test target: ${baseUrl}`);
 
+  await assertHealth();
   await assertPage("/dashboard");
   await assertPage("/inbox");
   await assertPage("/runs");

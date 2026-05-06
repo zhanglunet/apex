@@ -320,3 +320,31 @@ Keep public project documentation readable as autonomous iteration continues. Th
 - Kept detailed iteration records in this development log.
 - Verified `npm run build` on 2026-05-06.
 - Verified `APP_URL=http://localhost:3001 npm run test:smoke` on 2026-05-06.
+
+## 2026-05-06 - v0.1.11 Health Endpoint Plan
+
+### Goal
+
+Add a lightweight operational health endpoint for local development and future deployment checks. The app now has enough moving parts that a single endpoint should confirm the service version and database connectivity.
+
+### Scope
+
+- Add `GET /api/health`.
+- Return package version, status, timestamp, and core table counts.
+- Include health endpoint in smoke test.
+- Bump package version from `0.1.10` to `0.1.11`.
+
+### Acceptance Criteria
+
+- `/api/health` returns HTTP 200 when database access works.
+- Response includes `version`, `status`, and object counts.
+- `npm run build` and `npm run test:smoke` pass.
+- The release is committed, tagged, and pushed to `https://github.com/zhanglunet/apex`.
+
+### Completion Record
+
+- Added `GET /api/health`.
+- Returned package version, status, timestamp, and core object counts.
+- Added health endpoint coverage to smoke test.
+- Verified `npm run build` on 2026-05-06.
+- Verified `APP_URL=http://localhost:3001 npm run test:smoke` on 2026-05-06.
