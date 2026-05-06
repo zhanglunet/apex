@@ -340,8 +340,8 @@ V1.1 已完成第一轮开发：
 | M0 产品定义 | 已完成 | 明确先做 R1 Meeting Intelligence |
 | M1 V1 MVP | 已发布 | 上传、生成、编辑、导出、Failure Card 闭环 |
 | M2 V1.1 Quality Loop | 进行中 | 质量检查、Memory、Failure Ops、Eval Case |
-| M3 R1 可试用版 | 下一步 | 真实 API Key 下稳定输出，增加更多匿名样本回归 |
-| M4 Evidence Layer | 计划中 | 更细证据回链、引用检查、结构化 Evidence |
+| M3 V1.2 Evidence Layer | 下一步 | 结构化 Evidence Item、证据缺口工作台、证据进入 Failure/Eval 闭环 |
+| M4 R1 可试用版 | 计划中 | 真实 API Key 下稳定输出，增加更多匿名样本回归 |
 | M5 Research Desk | 计划中 | 启动 R3 Research Desk，支持资料包和研究问题 |
 | M6 Pilot Readiness | 计划中 | 面向设计伙伴的小范围低风险试用 |
 
@@ -386,6 +386,8 @@ V1.1 已完成第一轮开发：
 ### 阶段 3：证据层
 
 目标：让关键结论都有可追踪证据。
+
+下一版本已规划为 `V1.2 Evidence Layer`，产品设计见 [docs/v1.2-product-design.md](docs/v1.2-product-design.md)，开发计划见 [NEXT_VERSION_DEVELOPMENT_PLAN.md](NEXT_VERSION_DEVELOPMENT_PLAN.md)。
 
 计划功能：
 
@@ -441,3 +443,4 @@ npm run test:smoke
 - [DEVELOPMENT_PLAN.md](DEVELOPMENT_PLAN.md)
 - [NEXT_VERSION_DEVELOPMENT_PLAN.md](NEXT_VERSION_DEVELOPMENT_PLAN.md)
 - [docs/development-log.md](docs/development-log.md)
+- [docs/v1.2-product-design.md](docs/v1.2-product-design.md)

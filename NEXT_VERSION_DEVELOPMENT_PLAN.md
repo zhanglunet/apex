@@ -1,320 +1,324 @@
-# APEX V1.1 下一版本开发计划
+# APEX V1.2 下一版本产品设计与开发计划
 
-版本：V1.1 Quality Loop  
-目标：在当前 V1 MVP 已跑通“上传 -> 创建 R1 -> 生成 -> 编辑 -> 导出 -> Failure Card”的基础上，把产品从“可演示闭环”推进到“可真实试用的研究工作流”。
+版本：V1.2 Evidence Layer
+目标：在 V1.1 Quality Loop 已经具备“生成、修订、失败样本、Eval Case、Memory、Runs 工作台、健康检查”的基础上，补上 R1 Meeting Intelligence 最关键的证据层，让会议输出从“结构化纪要”升级为“可审计研究对象”。
 
-## 1. V1.1 核心目标
+## 1. 版本判断
 
-V1.1 不扩张产品线，继续聚焦 R1 Meeting Intelligence，但补齐三个关键能力：
+V1.1 已解决的问题：
 
-- 真实 LLM 输出质量更稳定。
-- Memory Candidate 能写入 MemoryObject。
-- Failure Card 能进入独立质量工作台，并形成基础 eval case。
+- R1 任务可以被连续创建、生成、编辑、导出。
+- Failure Card 可以进入质量工作台并转成 Eval Case。
+- Memory Object 可以跨会议浏览。
+- Dashboard 可以看到质量健康指标。
+- smoke test 覆盖核心页面和 API 校验。
+- `/api/health` 可以快速确认服务状态。
+
+V1.2 要解决的问题：
+
+- 当前关键结论只有文本里的 `证据：...` 字段，尚未成为可筛选、可复用、可复盘的数据对象。
+- 用户无法集中查看“哪些结论缺证据、哪些证据来源不清、哪些行动项只有待确认”。
+- Eval Case 只能记录失败描述，尚不能把“证据缺失”转成明确回归标准。
+- Memory Object 已经沉淀，但和证据来源之间没有关系。
 
 一句话目标：
 
 ```text
-让 R1 从能跑通，变成能被连续使用、复盘和改进。
+让 R1 输出中的关键变化、行动项、开放问题和质量警告都有可追踪的证据线索。
 ```
 
-## 2. 本版本不做什么
+## 2. 产品设计
 
-V1.1 暂不做：
+### 2.1 目标用户
 
-- R2 Earnings Workflow。
-- R3 Research Desk。
-- 音频自动转写。
-- PDF 解析。
-- 多 workspace / 多用户权限。
-- pgvector 检索。
-- 生产部署。
+V1.2 仍面向高频处理复杂会议材料的研究与决策团队：
 
-这些都放到 V1.2 或之后，避免过早拉大面。
+- 投资研究团队。
+- 企业战略和产业研究团队。
+- 高管办公室或决策支持团队。
+- 专业服务团队的项目负责人。
 
-## 3. 优先级总览
+这些用户最关心的不是“有没有纪要”，而是：
 
-| 优先级 | 模块 | 目标 |
+- 重要判断能否回到原始材料。
+- 结论是否只是模型补全。
+- 行动项是否有明确责任人和时间。
+- 质量问题能否沉淀为后续检查标准。
+
+### 2.2 核心用户故事
+
+1. 作为研究负责人，我希望打开一个 Run 时能看到“哪些输出有证据、哪些缺证据”，避免把没有来源的结论带入决策。
+2. 作为分析师，我希望从所有 Runs 中集中查看证据缺口，优先修复高风险输出。
+3. 作为质量运营者，我希望把“证据缺失”类 Failure Card 转成更明确的 Eval Case，后续验证模型是否补上证据。
+4. 作为团队成员，我希望 Memory Object 能显示来源任务，后续知道这条记忆是从哪次会议沉淀出来的。
+
+### 2.3 新增产品对象：Evidence Item
+
+V1.2 新增 `EvidenceItem`，用于保存 R1 输出中可追踪的证据信息。
+
+建议字段：
+
+| 字段 | 类型 | 说明 |
 | --- | --- | --- |
-| P0 | R1 JSON schema 稳定性 | 真实 LLM 输出不再轻易解析失败 |
-| P0 | Memory 写入 | 将 `memoryCandidates` 保存为 `MemoryObject` |
-| P0 | Failure Ops 页面 | 独立查看、筛选、处理 Failure Cards |
-| P1 | Quality Checks | 自动检查行动项、开放问题、质量警告、证据字段 |
-| P1 | Eval Case | 从 Failure Card 生成基础 eval case |
-| P1 | 样本回归 | 使用 `samples/` 下样本做最小回归测试 |
-| P2 | UI 打磨 | 改善 Run Detail 的可读性和任务状态 |
-| P2 | README 更新 | 同步新增功能与开发命令 |
+| `id` | String | 主键 |
+| `routeRunId` | String | 所属 R1 任务 |
+| `section` | String | 来源区块：`KEY_CHANGE` / `ACTION_ITEM` / `OPEN_QUESTION` / `QUALITY_WARNING` |
+| `claim` | String | 被支撑的结论、行动项或问题 |
+| `evidenceText` | String | 输出中提取出的证据文本 |
+| `sourceHint` | String? | 可选，原文位置或上下文提示 |
+| `status` | String | `SUPPORTED` / `WEAK` / `MISSING` |
+| `createdAt` | DateTime | 创建时间 |
 
-## 4. 里程碑
+### 2.4 页面与交互
 
-### Milestone 1：R1 生成稳定化
+#### Run Detail：Evidence Panel
 
-目标：配置真实 `OPENAI_API_KEY` 后，R1 输出更稳定、更容易解析、更符合产品结构。
+在 Run Detail 中新增 Evidence Panel：
 
-任务：
+- 显示本 Run 的 Evidence Items。
+- 按 `SUPPORTED` / `WEAK` / `MISSING` 标记证据质量。
+- 对缺证据项提供“创建 Failure Card”入口。
+- 显示证据对应的 claim 和 section。
 
-- [ ] 将 R1 输出 schema 抽成 TypeScript 类型。
-- [ ] 增加 `normalizeMeetingJson`，为缺失字段补默认值。
-- [ ] 增加 LLM 输出解析失败后的错误展示。
-- [ ] 增加“重新生成”按钮的确认状态。
-- [ ] 在 `qualityWarnings` 中强制标记不确定结论。
-- [ ] 将模型原始 JSON 保存到 `RouteRun.qualityJson` 或新增字段。
+#### Evidence Workbench：`/evidence`
 
-验收标准：
+新增独立页面：
 
-- [ ] 对 3 个样例会议材料连续生成不报错。
-- [ ] 生成结果始终包含 7 个固定区块：标题、5 行摘要、详细纪要、关键变化、行动项、Open Questions、Quality Warnings。
-- [ ] 行动项缺 owner / deadline 时自动显示 `待确认`。
+- 查看所有 Evidence Items。
+- 按 status 筛选。
+- 按 section 筛选。
+- 点击进入对应 Run。
+- 快速查看缺证据数量。
 
-涉及文件：
+#### Dashboard
 
-- `lib/prompts.ts`
-- `lib/llm.ts`
-- `lib/markdown.ts`
-- `components/RunEditor.tsx`
-- `app/api/generate/route.ts`
+新增指标：
 
-## 5. Milestone 2：Memory 写入
+- Missing Evidence 数量。
+- Weak Evidence 数量。
+- Supported Evidence 数量。
 
-目标：R1 输出里的 `memoryCandidates` 不再只是 Markdown 展示，而是真正写入 `MemoryObject` 表。
+#### Eval Case
 
-任务：
-
-- [ ] 在 `generateMeetingOutput` 中返回结构化数据和 Markdown，而不只是 Markdown。
-- [ ] 调整 `/api/generate`，解析 `memoryCandidates` 并写入 `MemoryObject`。
-- [ ] 在 Run Detail 中显示本任务关联的 Memory Objects。
-- [ ] 增加 Memory 类型标签：`COMPANY`、`PERSON`、`EVENT`、`THESIS`、`ACTION`。
-- [ ] 增加 Memory 写入去重策略，先按 `routeRunId + title + type` 避免重复。
-
-验收标准：
-
-- [ ] 生成 R1 输出后，Memory Candidate 自动保存。
-- [ ] Run Detail 能看到关联 Memory Objects。
-- [ ] 重复生成不会无限复制同一批 Memory Objects。
-
-涉及文件：
-
-- `prisma/schema.prisma`
-- `prisma/init.sql`
-- `lib/llm.ts`
-- `lib/markdown.ts`
-- `app/api/generate/route.ts`
-- `app/runs/[id]/page.tsx`
-- `components/RunEditor.tsx`
-
-## 6. Milestone 3：Failure Ops 页面
-
-目标：Failure Card 从 Run Detail 的局部表单升级为独立质量工作台。
-
-新增页面：
+从 Evidence 缺口创建 Eval Case 时，`expectedBehavior` 应更明确：
 
 ```text
-/failure-ops
+新输出必须为该 claim 提供可回到原始会议材料的证据；如果材料不支持，应明确写入 Quality Warnings，而不是补全结论。
 ```
 
-页面功能：
+## 3. 本版本不做什么
 
-- [ ] 查看所有 Failure Cards。
-- [ ] 按 severity 筛选：P0 / P1 / P2 / P3。
-- [ ] 按 status 筛选：OPEN / FIXED / WONT_FIX。
-- [ ] 按 failureType 筛选。
-- [ ] 点击进入对应 RouteRun。
-- [ ] 修改 Failure Card 状态。
-- [ ] 显示原输出、用户修订和失败描述。
+V1.2 暂不做：
 
-验收标准：
+- 不做向量数据库和语义检索。
+- 不做逐字级引用定位。
+- 不做 PDF 解析。
+- 不做音频自动转写。
+- 不做多用户权限。
+- 不做飞书、Slack、邮件集成。
 
-- [ ] AppShell 导航中出现 Failure Ops。
-- [ ] `/failure-ops` 可以查看当前所有失败样本。
-- [ ] 可以将 Failure Card 从 `OPEN` 改为 `FIXED`。
+V1.2 只做“结构化证据对象”和“证据缺口运营”，为后续 Evidence Layer 深化打基础。
 
-涉及文件：
+## 4. 技术设计
 
-- `components/AppShell.tsx`
-- `app/failure-ops/page.tsx`
-- `app/api/failure-cards/[id]/route.ts`
-- `components/FailureCardTable.tsx`
+### 4.1 数据模型
 
-## 7. Milestone 4：基础 Quality Checks
-
-目标：不是只保存输出，而是自动检查输出是否满足 R1 最低质量线。
-
-检查项：
-
-- 是否包含 `## 行动项`。
-- 是否包含 `## Open Questions`。
-- 是否包含 `## Quality Warnings`。
-- 行动项是否包含 Owner。
-- 行动项是否包含 Deadline。
-- 是否存在 `待确认`。
-- 输出长度是否低于最小阈值。
-
-任务：
-
-- [ ] 新增 `lib/quality.ts`。
-- [ ] 在 `/api/generate` 后运行 `runQualityChecks`。
-- [ ] 将检查结果保存到 `RouteRun.qualityJson`。
-- [ ] Quality Panel 展示每个检查项的状态。
-- [ ] P0/P1 规则先用静态规则表达，不接复杂评测模型。
-
-验收标准：
-
-- [ ] 生成后 Quality Panel 展示不少于 6 个检查项。
-- [ ] 缺少行动项或 Open Questions 时明确提示。
-- [ ] Quality Panel 不再只显示通过/待检查，而显示检查说明。
-
-涉及文件：
-
-- `lib/quality.ts`
-- `app/api/generate/route.ts`
-- `components/RunEditor.tsx`
-
-## 8. Milestone 5：Eval Case 最小闭环
-
-目标：Failure Card 可以沉淀为未来回归测试的候选样本。
-
-新增模型：
+新增 Prisma 模型：
 
 ```prisma
-model EvalCase {
-  id                  String   @id @default(cuid())
-  routeRunId          String
-  failureCardId       String?
-  routeType           String
-  inputText           String
-  expectedBehavior    String
-  scoringRubricJson   String?
-  status              String   @default("ACTIVE")
-  createdAt           DateTime @default(now())
+model EvidenceItem {
+  id           String   @id @default(cuid())
+  routeRunId   String
+  section      String
+  claim        String
+  evidenceText String
+  sourceHint   String?
+  status       String   @default("SUPPORTED")
+  createdAt    DateTime @default(now())
+  routeRun     RouteRun @relation(fields: [routeRunId], references: [id])
 }
 ```
+
+同时在 `RouteRun` 增加：
+
+```prisma
+evidenceItems EvidenceItem[]
+```
+
+### 4.2 Evidence 提取策略
+
+V1.2 先使用结构化输出抽取，不引入复杂模型：
+
+- 从 `keyChanges[].evidence` 生成 Evidence Item。
+- 从 `actionItems[].evidence` 生成 Evidence Item。
+- Open Questions 默认可生成 `MISSING` 或 `WEAK` 证据项。
+- Quality Warnings 中包含“不确定”“缺少”“无法确认”等关键词时生成缺口项。
+
+状态判定规则：
+
+| 状态 | 判定 |
+| --- | --- |
+| `SUPPORTED` | evidence 非空，且不是 `待确认` / `无` / `缺失` |
+| `WEAK` | evidence 过短，或包含 `待确认` |
+| `MISSING` | evidence 为空，或明确表示缺少证据 |
+
+### 4.3 API 变更
+
+新增：
+
+- `GET /api/evidence`
+- `PATCH /api/evidence/[id]`
+
+调整：
+
+- `/api/generate` 在写入 MemoryObject 后，同时写入 EvidenceItem。
+- 重复生成时先删除本 Run 的旧 EvidenceItem，再写入新版本，保持和 MemoryObject 一致。
+
+### 4.4 前端组件
+
+新增：
+
+- `components/EvidenceList.tsx`
+- `components/EvidenceStatusActions.tsx`
+- `app/evidence/page.tsx`
+
+调整：
+
+- `components/AppShell.tsx` 增加 Evidence 导航。
+- `components/RunEditor.tsx` 增加 Evidence Panel。
+- `app/dashboard/page.tsx` 增加 Evidence 健康指标。
+
+## 5. 开发里程碑
+
+### Milestone 1：Evidence 数据模型与抽取
 
 任务：
 
 - [ ] 更新 `prisma/schema.prisma`。
 - [ ] 更新 `prisma/init.sql`。
-- [ ] 在 Failure Card 页面增加“生成 Eval Case”按钮。
-- [ ] 保存输入文本、失败描述、期望行为。
-- [ ] 增加 `/evals` 页面，先列出 Eval Cases。
+- [ ] 新增 `lib/evidence.ts`，实现 `extractEvidenceItems`。
+- [ ] 在 `/api/generate` 中写入 EvidenceItem。
+- [ ] 生成时按 `routeRunId` 删除旧 EvidenceItem，避免重复。
 
 验收标准：
 
-- [ ] 任意 Failure Card 可以生成 Eval Case。
-- [ ] `/evals` 能看到生成的 eval case。
-- [ ] Eval Case 保留原输入和期望行为。
+- [ ] 生成 R1 输出后自动写入 EvidenceItem。
+- [ ] 重复生成不会无限复制 EvidenceItem。
+- [ ] smoke test 能验证至少生成 1 条 EvidenceItem。
 
-涉及文件：
-
-- `prisma/schema.prisma`
-- `prisma/init.sql`
-- `app/api/eval-cases/route.ts`
-- `app/evals/page.tsx`
-- `components/FailureCardTable.tsx`
-
-## 9. Milestone 6：样本回归测试
-
-目标：用本地样本保证每次改 Prompt 或 LLM 封装后，基础链路不坏。
+### Milestone 2：Run Detail Evidence Panel
 
 任务：
 
-- [ ] 新增 `scripts/smoke-test.ts`。
-- [ ] 用 `samples/sample_meeting.md` 创建本地测试流程。
-- [ ] 检查上传、创建 route、生成、保存、Failure Card 创建是否成功。
-- [ ] 在 `package.json` 增加 `test:smoke`。
+- [ ] Run Detail 查询 Evidence Items。
+- [ ] RunEditor 展示 Evidence Panel。
+- [ ] 按 status 使用不同视觉状态。
+- [ ] 缺证据项可以快速创建 Failure Card。
 
 验收标准：
 
-- [ ] `npm run test:smoke` 可以本地跑通。
-- [ ] 不依赖真实 `OPENAI_API_KEY`。
-- [ ] 输出明确显示每一步是否通过。
+- [ ] 任意已生成 Run 可以看到 Evidence Items。
+- [ ] `MISSING` 和 `WEAK` 能被清楚识别。
 
-涉及文件：
+### Milestone 3：Evidence Workbench
 
-- `scripts/smoke-test.ts`
-- `package.json`
-- `samples/`
+任务：
 
-## 10. 推荐开发顺序
+- [ ] 新增 `/evidence` 页面。
+- [ ] 支持 status 筛选。
+- [ ] 支持 section 筛选。
+- [ ] AppShell 增加 Evidence 导航。
+- [ ] Dashboard 增加 Evidence 指标。
 
-### Day 1：R1 schema 和质量检查
+验收标准：
 
-- [ ] 抽 TypeScript 类型。
-- [ ] 加 `normalizeMeetingJson`。
-- [ ] 加 `lib/quality.ts`。
-- [ ] 更新 Quality Panel。
-- [ ] 构建验证。
+- [ ] `/evidence` 可查看全部 Evidence Items。
+- [ ] `/evidence?status=MISSING` 可筛选缺证据项。
+- [ ] 每条 Evidence Item 可进入对应 Run。
 
-### Day 2：Memory 写入
+### Milestone 4：Eval Case 与质量闭环增强
 
-- [ ] 调整 LLM 返回结构。
-- [ ] `/api/generate` 写入 MemoryObject。
-- [ ] Run Detail 展示 Memory Objects。
-- [ ] 去重。
-- [ ] 构建验证。
+任务：
 
-### Day 3：Failure Ops 页面
+- [ ] Evidence 缺口可创建 Failure Card。
+- [ ] Evidence 缺口生成 Eval Case 时写入更明确的 expectedBehavior。
+- [ ] smoke test 覆盖 Evidence 页面和关键 API。
+- [ ] README 和开发日志更新。
 
-- [ ] 新增 `/failure-ops`。
-- [ ] 新增筛选和状态更新。
-- [ ] AppShell 增加导航。
-- [ ] 构建验证。
+验收标准：
 
-### Day 4：Eval Case
+- [ ] 缺证据项能进入 Failure Ops。
+- [ ] 缺证据 Failure Card 能转成 Eval Case。
+- [ ] smoke test 覆盖 Evidence 最小闭环。
 
-- [ ] 新增 `EvalCase` schema。
-- [ ] 更新 SQL 初始化脚本。
-- [ ] Failure Card 生成 Eval Case。
-- [ ] 新增 `/evals` 页面。
-- [ ] 构建验证。
+## 6. 建议小版本拆分
 
-### Day 5：Smoke Test 和文档
+| 小版本 | 目标 | 说明 |
+| --- | --- | --- |
+| `v0.1.12` | Evidence 数据模型 | 增加 EvidenceItem schema、init.sql、抽取 helper |
+| `v0.1.13` | 生成写入 Evidence | `/api/generate` 写入 EvidenceItem，smoke test 验证 |
+| `v0.1.14` | Run Detail Evidence Panel | 单个 Run 内查看证据项 |
+| `v0.1.15` | Evidence Workbench | `/evidence` 页面、筛选、导航 |
+| `v0.1.16` | Evidence 质量闭环 | 缺证据项进入 Failure/Eval 流程 |
+| `v0.1.17` | 文档与发布 | README、截图、Release Notes、GitHub Release |
 
-- [ ] 新增 `scripts/smoke-test.ts`。
-- [ ] 增加 `npm run test:smoke`。
-- [ ] 更新 README。
-- [ ] 用真实样本跑一次完整流程。
-- [ ] 推送 GitHub。
+## 7. 验证计划
 
-## 11. V1.1 完成标准
+每个小版本必须执行：
+
+```bash
+npm run build
+APP_URL=http://localhost:3001 npm run test:smoke
+```
+
+新增 smoke test 覆盖：
+
+- `/api/health`
+- `/evidence`
+- `/evidence?status=MISSING`
+- 生成后 EvidenceItem 数量大于 0
+- 重复生成不重复复制 EvidenceItem
+
+## 8. V1.2 完成标准
 
 功能完成：
 
-- [ ] 真实 LLM 输出可稳定解析。
-- [ ] Memory Candidates 自动写入数据库。
-- [ ] Failure Ops 有独立页面。
-- [ ] Quality Panel 展示具体检查项。
-- [ ] Failure Card 可以生成 Eval Case。
-- [ ] 本地 smoke test 可跑通。
+- [ ] EvidenceItem 数据模型可用。
+- [ ] R1 生成后自动产生 Evidence Items。
+- [ ] Run Detail 可以查看证据项。
+- [ ] Evidence Workbench 可以集中运营证据缺口。
+- [ ] 缺证据项可以进入 Failure/Eval 闭环。
 
 质量完成：
 
 - [ ] `npm run build` 通过。
 - [ ] `npm run test:smoke` 通过。
 - [ ] README 更新。
-- [ ] 无 API Key 泄露。
-- [ ] `storage/uploads`、`storage/exports`、`prisma/dev.db` 不进入 Git。
+- [ ] 开发日志记录每个小版本。
+- [ ] GitHub tag 和 release 发布。
 
 产品完成：
 
-- [ ] R1 不再只是单次生成，而具备“生成 -> 修订 -> 失败记录 -> 质量检查 -> 记忆沉淀”的闭环。
-- [ ] 可以拿给第一个设计伙伴做低风险试用。
+- [ ] 用户能回答“这条结论的证据是什么”。
+- [ ] 用户能集中查看“哪些输出缺证据”。
+- [ ] 证据缺口能沉淀为后续回归样本。
 
-## 12. V1.2 预告
+## 9. V1.3 预告
 
-V1.1 完成后，V1.2 可以选择两个方向之一：
+V1.2 完成后，V1.3 可以进入两个方向之一：
 
-方向 A：继续增强 R1
+方向 A：Evidence 深化
 
-- 音频转写。
-- 更细的证据回链。
-- 多模板会议输出。
-- 飞书文档导出。
+- 原文片段定位。
+- 证据引用上下文。
+- 结论-证据对照视图。
+- Evidence completeness score。
 
-方向 B：启动 R3 Research Desk
+方向 B：资料包 Research Desk
 
-- PDF 解析。
-- Evidence 对象。
+- PDF / DOCX 资料包解析。
+- 多材料 Evidence 对象。
 - 简单检索。
 - 研究问题回答。
-- Memory reuse 指标。
 
-建议优先方向：先做方向 A，把 R1 打磨到真实可用，再进入 R3。
+建议优先方向：先做方向 A，把 R1 的证据可信度打牢，再扩展资料类型。
