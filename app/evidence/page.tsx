@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { AppShell } from "@/components/AppShell";
+import { EvidenceActions } from "@/components/EvidenceActions";
 import { prisma } from "@/lib/db";
 
 const statuses = ["SUPPORTED", "WEAK", "MISSING"];
@@ -72,7 +73,10 @@ export default async function EvidencePage({
                         查看任务：{item.routeRun.title}
                       </Link>
                     </div>
-                    <div className="text-xs text-muted">{item.createdAt.toLocaleDateString("zh-CN")}</div>
+                    <div className="flex flex-col gap-2">
+                      <div className="text-xs text-muted">{item.createdAt.toLocaleDateString("zh-CN")}</div>
+                      <EvidenceActions evidenceId={item.id} status={item.status} />
+                    </div>
                   </div>
                 </div>
               ))

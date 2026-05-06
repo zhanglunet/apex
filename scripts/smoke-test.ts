@@ -95,6 +95,17 @@ async function main() {
   }
   console.log(`OK evidence items: ${countsAfterGenerate.evidenceItems}`);
 
+  const missingEvidenceResponse = await fetch(`${baseUrl}/api/evidence?status=MISSING`);
+  await assertOk(missingEvidenceResponse, "missing evidence list");
+  const missingEvidencePayload = await missingEvidenceResponse.json();
+  const evidenceId = missingEvidencePayload.evidenceItems?.[0]?.id as string | undefined;
+  if (!evidenceId) throw new Error("missing evidence list did not return an Evidence Item.");
+  console.log(`OK missing evidence item: ${evidenceId}`);
+
+  const evidenceFailureResponse = await fetch(`${baseUrl}/api/evidence/${evidenceId}/failure-card`, { method: "POST" });
+  await assertOk(evidenceFailureResponse, "evidence failure card");
+  console.log("OK evidence failure card");
+
   const saveResponse = await fetch(`${baseUrl}/api/runs/${routeRunId}`, {
     method: "PATCH",
     headers: { "Content-Type": "application/json" },

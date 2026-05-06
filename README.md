@@ -379,6 +379,7 @@ V1.1 已完成第一轮开发：
 | `v0.1.13` | R1 生成后自动写入 Evidence Items |
 | `v0.1.14` | Run Detail 增加 Evidence Panel |
 | `v0.1.15` | 增加 Evidence 工作台和 Dashboard 证据指标 |
+| `v0.1.16` | Evidence 缺口可创建 Failure Card |
 
 重点：
 

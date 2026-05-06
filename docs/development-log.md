@@ -475,3 +475,34 @@ Add an Evidence Workbench so evidence gaps can be reviewed across all R1 runs in
 - Extended smoke test to cover Evidence routes.
 - Verified `npm run build` on 2026-05-06.
 - Verified `APP_URL=http://localhost:3001 npm run test:smoke` on 2026-05-06.
+
+## 2026-05-06 - v0.1.16 Evidence Failure Loop Plan
+
+### Goal
+
+Connect Evidence gaps to the existing Failure Ops loop. Missing or weak evidence should not remain a read-only warning; it should be convertible into a Failure Card for review and eventual Eval Case creation.
+
+### Scope
+
+- Add `GET /api/evidence` for smoke and future integrations.
+- Add `POST /api/evidence/[id]/failure-card`.
+- Add Evidence Workbench action to create a Failure Card from WEAK or MISSING evidence.
+- Extend smoke test to create a Failure Card from a missing Evidence Item.
+- Bump package version from `0.1.15` to `0.1.16`.
+
+### Acceptance Criteria
+
+- Missing Evidence Items can create Failure Cards.
+- Created Failure Cards use `MISSING_EVIDENCE`.
+- Evidence API can filter by status.
+- `npm run build` and `npm run test:smoke` pass.
+- The release is committed, tagged, and pushed to `https://github.com/zhanglunet/apex`.
+
+### Completion Record
+
+- Added `GET /api/evidence` with status and section filters.
+- Added `POST /api/evidence/[id]/failure-card`.
+- Added Evidence Workbench action for creating Failure Cards from evidence gaps.
+- Extended smoke test to create a Failure Card from a missing Evidence Item.
+- Verified `npm run build` on 2026-05-06.
+- Verified `APP_URL=http://localhost:3001 npm run test:smoke` on 2026-05-06.
