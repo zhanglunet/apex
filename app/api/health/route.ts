@@ -3,12 +3,13 @@ import { prisma } from "@/lib/db";
 import packageJson from "@/package.json";
 
 export async function GET() {
-  const [sourceFiles, routeRuns, failureCards, evalCases, memoryObjects] = await Promise.all([
+  const [sourceFiles, routeRuns, failureCards, evalCases, memoryObjects, evidenceItems] = await Promise.all([
     prisma.sourceFile.count(),
     prisma.routeRun.count(),
     prisma.failureCard.count(),
     prisma.evalCase.count(),
     prisma.memoryObject.count(),
+    prisma.evidenceItem.count(),
   ]);
 
   return NextResponse.json({
@@ -21,6 +22,7 @@ export async function GET() {
       failureCards,
       evalCases,
       memoryObjects,
+      evidenceItems,
     },
   });
 }

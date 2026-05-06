@@ -33,6 +33,13 @@ async function assertHealth() {
   console.log(`OK health: ${payload.version}`);
 }
 
+async function getHealthCounts() {
+  const response = await fetch(`${baseUrl}/api/health`);
+  await assertOk(response, "health counts");
+  const payload = await response.json();
+  return payload.counts as { evidenceItems?: number };
+}
+
 async function main() {
   console.log(`Smoke test target: ${baseUrl}`);
 
@@ -80,6 +87,12 @@ async function main() {
   });
   await assertOk(generateResponse, "generate");
   console.log("OK generate");
+
+  const countsAfterGenerate = await getHealthCounts();
+  if (!countsAfterGenerate.evidenceItems || countsAfterGenerate.evidenceItems < 1) {
+    throw new Error("generate did not create Evidence Items.");
+  }
+  console.log(`OK evidence items: ${countsAfterGenerate.evidenceItems}`);
 
   const saveResponse = await fetch(`${baseUrl}/api/runs/${routeRunId}`, {
     method: "PATCH",

@@ -375,6 +375,7 @@ V1.1 已完成第一轮开发：
 | `v0.1.10` | README Release Notes 表格化 |
 | `v0.1.11` | 增加 `/api/health` 服务健康检查 |
 | `v0.1.12` | 增加 EvidenceItem 数据模型与证据抽取 helper |
+| `v0.1.13` | R1 生成后自动写入 Evidence Items |
 
 重点：
 

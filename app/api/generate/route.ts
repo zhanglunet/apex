@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/db";
+import { extractEvidenceItems } from "@/lib/evidence";
 import { generateMeetingOutput } from "@/lib/llm";
 import { runQualityChecks } from "@/lib/quality";
 
@@ -33,6 +34,20 @@ export async function POST(request: Request) {
           type: item.type,
           title: item.title,
           content: item.content,
+        })),
+      });
+    }
+    await prisma.evidenceItem.deleteMany({ where: { routeRunId: id } });
+    const evidenceItems = extractEvidenceItems(result.data);
+    if (evidenceItems.length) {
+      await prisma.evidenceItem.createMany({
+        data: evidenceItems.map((item) => ({
+          routeRunId: id,
+          section: item.section,
+          claim: item.claim,
+          evidenceText: item.evidenceText,
+          sourceHint: item.sourceHint || null,
+          status: item.status,
         })),
       });
     }

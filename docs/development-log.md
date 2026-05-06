@@ -379,3 +379,36 @@ Start V1.2 Evidence Layer by adding the EvidenceItem data model and deterministi
 - Verified `npm run db:generate` on 2026-05-06.
 - Verified `npm run build` on 2026-05-06.
 - Verified `APP_URL=http://localhost:3001 npm run test:smoke` on 2026-05-06.
+
+## 2026-05-06 - v0.1.13 Evidence Write Plan
+
+### Goal
+
+Connect Evidence extraction to the R1 generation flow. After this version, generated meeting output should create Evidence Items automatically, making V1.2 visible in persisted data instead of only helper code.
+
+### Scope
+
+- Run `extractEvidenceItems` inside `/api/generate`.
+- Delete existing Evidence Items for a RouteRun before writing regenerated evidence.
+- Create Evidence Items from key changes, action items, open questions, and quality warnings.
+- Add Evidence Item count to `/api/health`.
+- Extend smoke test to verify Evidence Items are created.
+- Bump package version from `0.1.12` to `0.1.13`.
+
+### Acceptance Criteria
+
+- R1 generation creates Evidence Items.
+- Re-generation replaces the run's Evidence Items instead of duplicating them.
+- `/api/health` includes `counts.evidenceItems`.
+- `npm run build` and `npm run test:smoke` pass.
+- The release is committed, tagged, and pushed to `https://github.com/zhanglunet/apex`.
+
+### Completion Record
+
+- Connected `extractEvidenceItems` to `/api/generate`.
+- Regeneration now deletes old Evidence Items before writing new ones.
+- Added Evidence Item count to `/api/health`.
+- Extended smoke test to verify Evidence Items are created.
+- Verified `npm run db:push` on 2026-05-06.
+- Verified `npm run build` on 2026-05-06.
+- Verified `APP_URL=http://localhost:3001 npm run test:smoke` on 2026-05-06.
