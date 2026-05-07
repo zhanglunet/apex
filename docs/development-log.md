@@ -534,3 +534,38 @@ Package the V1.2 Evidence Layer iteration into clear documentation so the produc
 - Linked V1.2 release notes from README.
 - Verified `npm run build` on 2026-05-06.
 - Verified `APP_URL=http://localhost:3001 npm run test:smoke` on 2026-05-06.
+
+## 2026-05-07 - 环境搭建与全界面回归计划
+
+### 目标
+
+把本地开发环境恢复到可持续迭代状态，并对当前所有核心界面做一次完整渲染检查，确认页面可访问、关键工作流可跑通、界面没有明显空白、报错、遮挡或文本溢出。
+
+### 范围
+
+- 同步 Prisma 数据库结构并重新生成 Prisma Client。
+- 执行生产构建验证。
+- 启动本地开发服务；如 `3000` 端口被占用，则使用 Next.js 自动分配端口。
+- 执行端到端 smoke test。
+- 截图检查以下页面：Dashboard、Inbox、Runs、Run Detail、Evidence、Failure Ops、Evals、Memory。
+- 将测试截图保存到 `docs/screenshots/ui-test/`。
+- 新增中文测试报告，保留本次环境搭建和界面检查记录。
+
+### 验收标准
+
+- `npm run db:push` 成功。
+- `npm run build` 成功。
+- `APP_URL=http://localhost:3001 npm run test:smoke` 成功。
+- 所有核心页面返回正常页面，不出现 404、500、空白页或明显布局错乱。
+- 测试报告和截图路径可追溯。
+
+### 完成记录
+
+- 已执行 `npm run db:push`，数据库结构同步成功并生成 Prisma Client。
+- 已执行 `npm run build`，生产构建通过。
+- 已在 `http://localhost:3001` 启动本地开发服务；`3000` 端口已有进程占用，因此使用 `3001`。
+- 已执行 `APP_URL=http://localhost:3001 npm run test:smoke`，smoke test 通过。
+- 已完成 Dashboard、Inbox、Runs、Run Detail、Evidence、Failure Ops、Evals、Memory 的桌面端截图检查。
+- 已补充 Run Detail 高视口截图，确认 Evidence Panel 和 Failure Card 区域正常渲染。
+- 未发现明显空白页、服务端错误页面、组件重叠或文本溢出。
+- 测试报告见 `docs/ui-test-report-2026-05-07.md`。
